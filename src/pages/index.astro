@@ -4,6 +4,7 @@ import FoodCard from '../components/FoodCard.astro';
 import DormCard from '../components/DormCard.astro';
 import NightlifeCard from '../components/NightlifeCard.astro';
 import MotorbikeCard from '../components/MotorbikeCard.astro';
+import SuggestionForm from '../components/SuggestionForm.astro';
 import SearchBar from '../components/SearchBar.astro';
 import { getCollection } from 'astro:content';
 
@@ -198,6 +199,11 @@ const metaDescription = "คู่มือรวมของกินอ่า�
           <NightlifeCard bar={bar} />
         ))}
       </div>
+    </div>
+
+    <!-- COMMUNITY SUGGESTION & UPDATE FORM -->
+    <div class="mt-20 pt-8 border-t border-stone-200">
+      <SuggestionForm />
     </div>
   </section>
 
