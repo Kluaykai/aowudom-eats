@@ -7,9 +7,20 @@ interface Props {
 
 const { bike } = Astro.props;
 const { data, slug } = bike;
+
+const searchKeywords = [
+  data.title,
+  data.shopName,
+  data.zone,
+  data.phoneNumber,
+  ...data.services,
+  'ซ่อมมอเตอร์ไซค์ ปะยาง มอไซค์ น้ำมันเครื่อง แบตเตอรี่',
+].join(' ').toLowerCase();
 ---
 
 <article
+  data-searchable-card
+  data-keywords={searchKeywords}
   data-category="motorbikes"
   class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group"
 >

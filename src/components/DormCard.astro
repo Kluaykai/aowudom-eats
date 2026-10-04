@@ -12,9 +12,22 @@ const reviewCount = data.studentReviews?.length || 0;
 const avgRating = reviewCount > 0 
   ? (data.studentReviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount).toFixed(1)
   : "4.8";
+
+const searchKeywords = [
+  data.title,
+  data.type,
+  data.zone,
+  data.electricityRate,
+  data.waterRate,
+  data.priceRange,
+  data.petFriendly ? 'สัตว์เลี้ยง หมา แมว pet friendly' : '',
+  ...data.facilities,
+].join(' ').toLowerCase();
 ---
 
 <article
+  data-searchable-card
+  data-keywords={searchKeywords}
   data-category="dorms"
   class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group"
 >
