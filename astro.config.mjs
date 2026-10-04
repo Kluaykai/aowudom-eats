@@ -4,6 +4,6 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://auwaudom-food.example.com',
+  site: 'https://www.srcnews.ninja',
   integrations: [tailwind(), sitemap()]
 });
