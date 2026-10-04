@@ -1,0 +1,127 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const bikes = await getCollection('motorbikes');
+  return bikes.map((bike) => ({
+    params: { slug: bike.slug },
+    props: { bike },
+  }));
+}
+
+interface Props {
+  bike: CollectionEntry<'motorbikes'>;
+}
+
+const { bike } = Astro.props;
+const { data } = bike;
+const { Content } = await bike.render();
+---
+
+<MainLayout
+  title={`${data.shopName} - ร้านซ่อมมอเตอร์ไซค์ ปะยาง ย่านอ่าวอุดม ม.เกษตร ศรีราชา`}
+  description={`${data.title} บริการซ่อมมอเตอร์ไซค์ ถ่ายน้ำมันเครื่อง ปะยาง โซน ${data.zone} โทร ${data.phoneNumber}`}
+  image={data.coverImage}
+>
+  <article class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
+      <a href="/" class="hover:text-red-600">หน้าแรก</a>
+      <span>/</span>
+      <a href="/motorbikes" class="hover:text-red-600">ซ่อมมอเตอร์ไซค์</a>
+      <span>/</span>
+      <span class="text-stone-700 truncate">{data.shopName}</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+          🛵 ซ่อมมอเตอร์ไซค์
+        </span>
+        {data.emergencyService && (
+          <span class="bg-amber-500 text-stone-900 text-xs font-bold px-3 py-1 rounded-full">
+            🚨 บริการนอกสถานที่
+          </span>
+        )}
+        <span class="bg-stone-100 text-stone-700 text-xs font-semibold px-3 py-1 rounded-full">
+          📍 โซน: {data.zone}
+        </span>
+      </div>
+
+      <h1 class="text-2xl md:text-4xl font-extrabold text-stone-900 leading-snug tracking-tight">
+        {data.title}
+      </h1>
+
+      <div class="flex flex-wrap items-center gap-4 text-xs md:text-sm text-stone-500 mt-3 pb-6 border-b border-stone-200">
+        <span>🛵 ระยะทาง: <strong class="text-stone-800">{data.distanceToKU}</strong></span>
+        <span>•</span>
+        <span>⏰ เวลาทำการ: <strong class="text-stone-800">{data.openHours}</strong></span>
+      </div>
+    </header>
+
+    <!-- Cover Image -->
+    <div class="relative rounded-2xl overflow-hidden aspect-[16/9] mb-8 shadow-sm">
+      <img
+        src={data.coverImage}
+        alt={`ร้านซ่อมมอเตอร์ไซค์ ${data.shopName} ย่านอ่าวอุดม`}
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <!-- Quick Info Box -->
+    <div class="bg-white rounded-2xl border border-stone-200 p-6 shadow-sm mb-10">
+      <!-- Call Button Banner -->
+      <div class="bg-emerald-600 text-white p-5 rounded-2xl mb-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <span class="text-xs text-emerald-200 font-bold block uppercase tracking-wider">ติดต่อร้านหรือเรียกช่างทันที</span>
+          <span class="text-xl md:text-2xl font-black">{data.phoneNumber}</span>
+        </div>
+        <a
+          href={`tel:${data.phoneNumber.split('/')[0].trim().replace(/-/g, '')}`}
+          class="bg-white text-emerald-700 hover:bg-emerald-50 px-6 py-3 rounded-xl font-extrabold text-sm shadow-md transition-all flex items-center gap-2"
+        >
+          <span>📞</span> กดโทรออกทันที
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-stone-50 p-4 rounded-xl border border-stone-100">
+          <span class="text-stone-400 text-xs block mb-1">ราคาประเมินเบื้องต้น</span>
+          <span class="text-base font-bold text-stone-800">{data.priceEstimate}</span>
+        </div>
+        <div class="bg-stone-50 p-4 rounded-xl border border-stone-100">
+          <span class="text-stone-400 text-xs block mb-1">เวลาให้บริการ</span>
+          <span class="text-base font-bold text-stone-800">{data.openHours}</span>
+        </div>
+      </div>
+
+      <!-- Services List -->
+      <h3 class="text-sm font-bold text-stone-800 mb-3">บริการที่มีให้:</h3>
+      <div class="flex flex-wrap gap-2 mb-6">
+        {data.services.map((s) => (
+          <span class="bg-stone-100 text-stone-700 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1">
+            <span>✓</span> {s}
+          </span>
+        ))}
+      </div>
+
+      <div class="flex justify-end">
+        <a
+          href={data.googleMapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors shadow-sm"
+        >
+          <span>📍</span> ดูพิกัดบน Google Maps
+        </a>
+      </div>
+    </div>
+
+    <!-- Article Content -->
+    <div class="prose prose-stone lg:prose-lg max-w-none text-stone-700 leading-relaxed font-normal mb-12">
+      <Content />
+    </div>
+  </article>
+</MainLayout>

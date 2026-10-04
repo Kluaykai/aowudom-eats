@@ -1,0 +1,64 @@
+{
+  "$ref": "#/definitions/motorbikes",
+  "definitions": {
+    "motorbikes": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "shopName": {
+          "type": "string"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "priceEstimate": {
+          "type": "string"
+        },
+        "zone": {
+          "type": "string"
+        },
+        "distanceToKU": {
+          "type": "string"
+        },
+        "openHours": {
+          "type": "string"
+        },
+        "phoneNumber": {
+          "type": "string"
+        },
+        "emergencyService": {
+          "type": "boolean"
+        },
+        "googleMapsUrl": {
+          "type": "string"
+        },
+        "coverImage": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "shopName",
+        "services",
+        "priceEstimate",
+        "zone",
+        "distanceToKU",
+        "openHours",
+        "phoneNumber",
+        "emergencyService",
+        "googleMapsUrl",
+        "coverImage"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

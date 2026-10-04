@@ -65,8 +65,27 @@ const nightlifeCollection = defineCollection({
   }),
 });
 
+const motorbikesCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    shopName: z.string(),
+    services: z.array(z.string()),
+    priceEstimate: z.string(),
+    zone: z.string(),
+    distanceToKU: z.string(),
+    openHours: z.string(),
+    phoneNumber: z.string(),
+    emergencyService: z.boolean(),
+    googleMapsUrl: z.string(),
+    coverImage: z.string(),
+  }),
+});
+
 export const collections = {
   reviews: reviewsCollection,
   dormitories: dormitoriesCollection,
   nightlife: nightlifeCollection,
+  motorbikes: motorbikesCollection,
 };
+
