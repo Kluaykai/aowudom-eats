@@ -1,0 +1,73 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allReviews = await getCollection('reviews');
+
+// Group categories
+const categoryMap = new Map<string, number>();
+allReviews.forEach(r => {
+  categoryMap.set(r.data.category, (categoryMap.get(r.data.category) || 0) + 1);
+});
+
+// Group tags
+const tagMap = new Map<string, number>();
+allReviews.forEach(r => {
+  r.data.tags.forEach(t => {
+    tagMap.set(t, (tagMap.get(t) || 0) + 1);
+  });
+});
+---
+
+<MainLayout title="หมวดหมู่ร้านอาหารทั้งหมด ย่านอ่าวอุดม">
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-stone-900">
+        หมวดหมู่และประเภทอาหาร
+      </h1>
+      <p class="text-stone-500 text-sm mt-2">
+        เลือกค้นหาร้านอาหารตามประเภทความอร่อยหรือสไตล์ที่ต้องการ
+      </p>
+    </div>
+
+    <!-- Main Categories -->
+    <div class="mb-12">
+      <h2 class="text-xl font-bold text-stone-900 mb-6 flex items-center gap-2">
+        <span>📂</span> หมวดหมู่หลัก
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {Array.from(categoryMap.entries()).map(([cat, count]) => (
+          <a
+            href={`/category/${cat}`}
+            class="p-5 bg-white rounded-2xl border border-stone-200 hover:border-brand-500 hover:shadow-md transition-all flex items-center justify-between group"
+          >
+            <span class="font-bold text-stone-800 group-hover:text-brand-600 transition-colors">
+              {cat}
+            </span>
+            <span class="text-xs font-semibold bg-stone-100 text-stone-600 px-2.5 py-1 rounded-full group-hover:bg-brand-50 group-hover:text-brand-600">
+              {count} ร้าน
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div>
+      <h2 class="text-xl font-bold text-stone-900 mb-6 flex items-center gap-2">
+        <span>🏷️</span> แท็กทั้งหมด
+      </h2>
+      <div class="flex flex-wrap gap-2.5">
+        {Array.from(tagMap.entries()).map(([tag, count]) => (
+          <a
+            href={`/category/${tag}`}
+            class="inline-flex items-center gap-2 text-sm bg-stone-100 hover:bg-stone-200 text-stone-700 px-4 py-2 rounded-xl transition-colors"
+          >
+            <span>#{tag}</span>
+            <span class="text-xs text-stone-400">({count})</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</MainLayout>

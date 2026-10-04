@@ -1,0 +1,76 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import FoodCard from '../components/FoodCard.astro';
+import SearchBar from '../components/SearchBar.astro';
+import { getCollection } from 'astro:content';
+
+const allReviews = await getCollection('reviews');
+// Sort by date descending
+const sortedReviews = allReviews.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const featuredCategories = [
+  { name: 'ร้านปิดดึก', icon: '🌙', desc: 'เปิดถึงดึก คลายหิวรอบดึก', count: allReviews.filter(r => r.data.category === 'ร้านปิดดึก').length },
+  { name: 'งบประหยัด', icon: '💰', desc: 'ราคาเป็นมิตร สบายกระเป๋า', count: allReviews.filter(r => r.data.category === 'งบประหยัด').length },
+  { name: 'คาเฟ่', icon: '☕', desc: 'กาแฟดี Slow Bar นั่งทำงาน', count: allReviews.filter(r => r.data.category === 'คาเฟ่').length },
+  { name: 'ซีฟู้ด-ริมทะเล', icon: '🦀', desc: 'อาหารทะเลสด บรรยากาศติดริมน้ำ', count: allReviews.filter(r => r.data.category === 'ซีฟู้ด-ริมทะเล').length },
+];
+---
+
+<MainLayout title="รวมของกินอ่าวอุดม ม.เกษตร ศรีราชา">
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden bg-white border-b border-stone-200">
+    <div class="absolute inset-0 bg-gradient-to-b from-orange-50/40 via-transparent to-transparent pointer-events-none"></div>
+    <div class="max-w-6xl mx-auto px-4 py-14 md:py-20 relative text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-600 text-xs font-semibold mb-6">
+        <span>✨ พิกัดร้านจริง คัดเฉพาะร้านเด็ดรอบรั้ว ม.เกษตร ศรีราชา</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-stone-900 tracking-tight leading-[1.2] max-w-3xl mx-auto">
+        รีวิวของกินย่าน <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-amber-500">อ่าวอุดม</span> ร้านจริง ข้อมูลจริง
+      </h1>
+      <p class="mt-4 text-base md:text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed">
+        รวบรวมร้านอาหารเปิดดึก ร้านซีฟู้ดริมทะเล คาเฟ่ Slow Bar และร้านข้าวต้มรอบมหาวิทยาลัยเกษตรศาสตร์ ศรีราชา พร้อมเวลาเปิด-ปิดจริงและพิกัด Google Maps
+      </p>
+
+      <!-- Instant Search Bar -->
+      <SearchBar />
+
+      <!-- Quick Category Buttons -->
+      <div class="mt-4 flex flex-wrap justify-center gap-3">
+        {featuredCategories.map((cat) => (
+          <a
+            href={`/category/${cat.name}`}
+            class="flex items-center gap-2.5 bg-stone-50 hover:bg-stone-100 border border-stone-200 hover:border-brand-500 px-4 py-2.5 rounded-xl transition-all shadow-sm group"
+          >
+            <span class="text-xl group-hover:scale-110 transition-transform">{cat.icon}</span>
+            <div class="text-left">
+              <span class="font-bold text-stone-800 text-sm block group-hover:text-brand-600 transition-colors">{cat.name}</span>
+              <span class="text-[11px] text-stone-400 block">{cat.desc} ({cat.count})</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Articles Section -->
+  <section class="max-w-6xl mx-auto px-4 py-12">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">
+          ร้านแนะนำย่านอ่าวอุดม 🔥
+        </h2>
+        <p class="text-stone-500 text-sm mt-1">คัดร้านที่มีอยู่จริงในพื้นที่ พร้อมพิกัดและเมนูซิกเนเจอร์</p>
+      </div>
+
+      <a href="/categories" class="text-sm font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1">
+        ดูหมวดหมู่ทั้งหมด <span>→</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {sortedReviews.map((review) => (
+        <FoodCard review={review} />
+      ))}
+    </div>
+  </section>
+</MainLayout>

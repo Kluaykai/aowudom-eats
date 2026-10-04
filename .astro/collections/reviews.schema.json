@@ -1,0 +1,98 @@
+{
+  "$ref": "#/definitions/reviews",
+  "definitions": {
+    "reviews": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "shopName": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "ร้านปิดดึก",
+            "งบประหยัด",
+            "คาเฟ่",
+            "อาหารจานด่วน",
+            "ซีฟู้ด-ริมทะเล",
+            "บุฟเฟต์-หมูกระทะ"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "coverImage": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "priceRange": {
+          "type": "string"
+        },
+        "openingHours": {
+          "type": "string"
+        },
+        "googleMapsUrl": {
+          "type": "string"
+        },
+        "recommendedMenus": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pubDate": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "integer",
+              "format": "unix-time"
+            }
+          ]
+        },
+        "author": {
+          "type": "string",
+          "default": "Foodie ม.เกษตร ศรีราชา"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "shopName",
+        "category",
+        "tags",
+        "coverImage",
+        "rating",
+        "priceRange",
+        "openingHours",
+        "googleMapsUrl",
+        "recommendedMenus",
+        "pubDate"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

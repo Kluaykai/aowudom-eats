@@ -1,0 +1,84 @@
+---
+interface Props {
+  shopName: string;
+  rating: number;
+  openingHours: string;
+  priceRange: string;
+  googleMapsUrl: string;
+  recommendedMenus: string[];
+}
+
+const {
+  shopName,
+  rating,
+  openingHours,
+  priceRange,
+  googleMapsUrl,
+  recommendedMenus,
+} = Astro.props;
+---
+
+<div class="bg-gradient-to-br from-amber-50/50 via-white to-orange-50/30 rounded-2xl border border-amber-200/80 p-6 md:p-7 shadow-sm my-8">
+  <div class="flex flex-col md:flex-row md:items-center justify-between pb-5 border-b border-stone-200 gap-3">
+    <div>
+      <span class="text-xs uppercase tracking-wider font-semibold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-md">
+        📍 ข้อมูลสรุปและพิกัดร้าน
+      </span>
+      <h3 class="text-2xl font-bold text-stone-900 mt-2">{shopName}</h3>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="bg-amber-400 text-stone-900 font-bold px-3 py-1.5 rounded-xl text-base flex items-center gap-1 shadow-sm">
+        <span>⭐</span>
+        <span>{rating.toFixed(1)} / 5.0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+    <div class="space-y-3.5 text-sm">
+      <div class="flex items-start gap-3">
+        <span class="text-lg">⏰</span>
+        <div>
+          <span class="font-semibold text-stone-900 block">เวลาเปิด - ปิด:</span>
+          <span class="text-stone-600">{openingHours}</span>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-3">
+        <span class="text-lg">💵</span>
+        <div>
+          <span class="font-semibold text-stone-900 block">ราคาเฉลี่ยโดยประมาณ:</span>
+          <span class="text-stone-600">{priceRange}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-3.5 text-sm">
+      <div class="flex items-start gap-3">
+        <span class="text-lg">🍴</span>
+        <div>
+          <span class="font-semibold text-stone-900 block">เมนูแนะนำที่ห้ามพลาด:</span>
+          <ul class="list-disc list-inside text-stone-600 mt-1 space-y-0.5">
+            {recommendedMenus.map((menu) => (
+              <li>{menu}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 pt-5 border-t border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <span class="text-xs text-stone-500">
+      * ข้อมูลและราคาอาจมีการเปลี่ยนแปลงตามโปรโมชั่นของทางร้าน
+    </span>
+    <a
+      href={googleMapsUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center justify-center gap-2 bg-stone-900 hover:bg-stone-800 text-white font-medium text-sm px-5 py-2.5 rounded-xl shadow-sm hover:shadow transition-all"
+    >
+      <span>🗺️ ดูพิกัดบน Google Maps</span>
+    </a>
+  </div>
+</div>

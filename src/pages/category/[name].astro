@@ -1,0 +1,59 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import FoodCard from '../../components/FoodCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allReviews = await getCollection('reviews');
+  
+  // Extract all categories and tags
+  const tagsAndCategories = new Set<string>();
+  allReviews.forEach(r => {
+    tagsAndCategories.add(r.data.category);
+    r.data.tags.forEach(t => tagsAndCategories.add(t));
+  });
+
+  return Array.from(tagsAndCategories).map(cat => ({
+    params: { name: cat },
+    props: {
+      categoryName: cat,
+      reviews: allReviews.filter(r => r.data.category === cat || r.data.tags.includes(cat))
+    }
+  }));
+}
+
+const { categoryName, reviews } = Astro.props;
+---
+
+<MainLayout title={`หมวดหมู่: ${categoryName} - รีวิวของกินอ่าวอุดม`}>
+  <div class="max-w-6xl mx-auto px-4 py-10 md:py-14">
+    <!-- Header -->
+    <div class="mb-10 text-center max-w-xl mx-auto">
+      <span class="text-xs uppercase tracking-wider font-semibold text-brand-600 bg-brand-50 px-3 py-1 rounded-full">
+        หมวดหมู่ / แท็ก
+      </span>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-stone-900 mt-3">
+        {categoryName}
+      </h1>
+      <p class="text-stone-500 text-sm mt-2">
+        พบทั้งหมด {reviews.length} บทความในหมวดหมู่นี้
+      </p>
+    </div>
+
+    <!-- Review Grid -->
+    {reviews.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {reviews.map((review) => (
+          <FoodCard review={review} />
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-16 bg-white rounded-2xl border border-stone-200">
+        <p class="text-stone-500">ยังไม่มีบทความในหมวดหมู่นี้</p>
+        <a href="/" class="inline-block mt-4 text-brand-600 font-semibold text-sm">
+          กลับสู่หน้าแรก →
+        </a>
+      </div>
+    )}
+  </div>
+</MainLayout>

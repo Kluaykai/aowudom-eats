@@ -1,0 +1,77 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  review: CollectionEntry<'reviews'>;
+}
+
+const { review } = Astro.props;
+const { data, slug } = review;
+
+const formattedDate = new Intl.DateTimeFormat('th-TH', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+}).format(data.pubDate);
+
+// Combine keywords for client-side search
+const searchKeywords = [
+  data.title,
+  data.shopName,
+  data.category,
+  ...data.tags,
+  ...data.recommendedMenus,
+  data.description
+].join(' ').toLowerCase();
+---
+
+<article
+  data-food-card
+  data-keywords={searchKeywords}
+  class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group"
+>
+  <!-- Card Cover -->
+  <a href={`/reviews/${slug}`} class="relative aspect-[16/10] overflow-hidden bg-stone-100 block">
+    <img
+      src={data.coverImage}
+      alt={data.title}
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      loading="lazy"
+    />
+    <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-stone-800 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+      {data.category}
+    </div>
+    <div class="absolute bottom-3 right-3 bg-stone-900/80 backdrop-blur-sm text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+      ⭐ <span>{data.rating.toFixed(1)}</span>
+    </div>
+  </a>
+
+  <!-- Content -->
+  <div class="p-5 flex flex-col flex-grow">
+    <div class="flex items-center gap-2 text-xs text-stone-400 mb-2">
+      <span>{formattedDate}</span>
+      <span>•</span>
+      <span>{data.author}</span>
+    </div>
+
+    <h3 class="font-bold text-stone-900 text-lg leading-snug mb-2 group-hover:text-brand-600 transition-colors line-clamp-2">
+      <a href={`/reviews/${slug}`}>
+        {data.title}
+      </a>
+    </h3>
+
+    <p class="text-sm text-stone-600 line-clamp-2 mb-4 flex-grow">
+      {data.description}
+    </p>
+
+    <!-- Info Meta badges -->
+    <div class="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+      <span class="flex items-center gap-1">
+        💵 <span>{data.priceRange}</span>
+      </span>
+      <span class="flex items-center gap-1">
+        ⏰ <span>{data.openingHours.split('(')[0]}</span>
+      </span>
+    </div>
+  </div>
+</article>
