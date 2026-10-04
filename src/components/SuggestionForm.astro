@@ -117,9 +117,11 @@
   const form = document.getElementById('suggest-form') as HTMLFormElement | null;
   const successBox = document.getElementById('suggest-success');
   const resetBtn = document.getElementById('s-reset-btn');
+  const submitBtn = document.getElementById('s-submit-btn') as HTMLButtonElement | null;
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwXgkv8TS9jznex5DUudboLuM2roF8sN6neWL4BgikwCmYHCjcXzFmxEPah6-wUAgWHdg/exec';
 
   if (form && successBox) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
       const author = (document.getElementById('s-author') as HTMLInputElement)?.value || '';
@@ -127,22 +129,47 @@
       const place = (document.getElementById('s-place') as HTMLInputElement)?.value || '';
       const details = (document.getElementById('s-details') as HTMLTextAreaElement)?.value || '';
 
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳</span> กำลังส่งข้อมูล...';
+      }
+
+      const payload = {
+        author,
+        category,
+        place,
+        details,
+        timestamp: new Date().toISOString()
+      };
+
+      // ส่งข้อความเข้า LINE ผ่าน Google Apps Script Webhook
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+      } catch (err) {
+        console.error('Failed to send to LINE:', err);
+      }
+
       // บันทึกลง LocalStorage เผื่อเก็บประวัติฝั่ง Client
       try {
         const stored = JSON.parse(localStorage.getItem('ku_user_suggestions') || '[]');
-        stored.push({
-          author,
-          category,
-          place,
-          details,
-          timestamp: new Date().toISOString()
-        });
+        stored.push(payload);
         localStorage.setItem('ku_user_suggestions', JSON.stringify(stored));
       } catch (err) {
         console.error(err);
       }
 
       // แสดงกล่องสำเร็จ
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🚀</span> ส่งข้อมูลแนะนำร้านเด็ด';
+      }
       form.classList.add('hidden');
       successBox.classList.remove('hidden');
     });
