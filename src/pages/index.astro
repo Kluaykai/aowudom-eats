@@ -14,9 +14,14 @@ const featuredCategories = [
   { name: 'คาเฟ่', icon: '☕', desc: 'กาแฟดี Slow Bar นั่งทำงาน', count: allReviews.filter(r => r.data.category === 'คาเฟ่').length },
   { name: 'ซีฟู้ด-ริมทะเล', icon: '🦀', desc: 'อาหารทะเลสด บรรยากาศติดริมน้ำ', count: allReviews.filter(r => r.data.category === 'ซีฟู้ด-ริมทะเล').length },
 ];
+const metaDescription = "รวมร้านอาหารและแหล่งของกินอ่าวอุดม ม.เกษตร ศรีราชา ร้านเด็ดขวัญใจเด็กหอ คาเฟ่ ร้านปิดดึก อาหารตามสั่ง และซีฟู้ดรสเด็ด พร้อมพิกัดจริง";
 ---
 
-<MainLayout title="รวมของกินอ่าวอุดม ม.เกษตร ศรีราชา">
+<MainLayout
+  title="รวมร้านเด็ดของกินอ่าวอุดม ม.เกษตร ศรีราชา | SRC News"
+  description={metaDescription}
+  exactTitle={true}
+>
   <!-- Hero Section -->
   <section class="relative overflow-hidden bg-white border-b border-stone-200">
     <div class="absolute inset-0 bg-gradient-to-b from-orange-50/40 via-transparent to-transparent pointer-events-none"></div>
