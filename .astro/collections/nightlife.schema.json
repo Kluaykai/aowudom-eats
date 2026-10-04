@@ -1,0 +1,82 @@
+{
+  "$ref": "#/definitions/nightlife",
+  "definitions": {
+    "nightlife": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "style": {
+          "type": "string"
+        },
+        "pricePerPerson": {
+          "type": "string"
+        },
+        "zone": {
+          "type": "string"
+        },
+        "openHours": {
+          "type": "string"
+        },
+        "highlightPromo": {
+          "type": "string"
+        },
+        "facilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "studentReviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "author": {
+                "type": "string"
+              },
+              "comment": {
+                "type": "string"
+              },
+              "rating": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 5
+              }
+            },
+            "required": [
+              "author",
+              "comment",
+              "rating"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "googleMapsUrl": {
+          "type": "string"
+        },
+        "coverImage": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "style",
+        "pricePerPerson",
+        "zone",
+        "openHours",
+        "highlightPromo",
+        "facilities",
+        "studentReviews",
+        "googleMapsUrl",
+        "coverImage"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

@@ -1,0 +1,101 @@
+{
+  "$ref": "#/definitions/dormitories",
+  "definitions": {
+    "dormitories": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "หอพัก",
+            "คอนโด"
+          ]
+        },
+        "priceRange": {
+          "type": "string"
+        },
+        "electricityRate": {
+          "type": "string"
+        },
+        "waterRate": {
+          "type": "string"
+        },
+        "zone": {
+          "type": "string",
+          "enum": [
+            "ซอยอ่าวอุดม",
+            "ประตู 1",
+            "ประตู 2",
+            "ประตู 3",
+            "เขาน้ำซับ"
+          ]
+        },
+        "distanceToKU": {
+          "type": "string"
+        },
+        "petFriendly": {
+          "type": "boolean"
+        },
+        "facilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "studentReviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "author": {
+                "type": "string"
+              },
+              "comment": {
+                "type": "string"
+              },
+              "rating": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 5
+              }
+            },
+            "required": [
+              "author",
+              "comment",
+              "rating"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "googleMapsUrl": {
+          "type": "string"
+        },
+        "coverImage": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "type",
+        "priceRange",
+        "electricityRate",
+        "waterRate",
+        "zone",
+        "distanceToKU",
+        "petFriendly",
+        "facilities",
+        "studentReviews",
+        "googleMapsUrl",
+        "coverImage"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

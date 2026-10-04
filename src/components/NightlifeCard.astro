@@ -1,0 +1,67 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  bar: CollectionEntry<'nightlife'>;
+}
+
+const { bar } = Astro.props;
+const { data, slug } = bar;
+
+const avgRating = (data.studentReviews.reduce((sum, r) => sum + r.rating, 0) / data.studentReviews.length).toFixed(1);
+---
+
+<article
+  data-category="nightlife"
+  class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group"
+>
+  <a href={`/nightlife/${slug}`} class="relative aspect-[16/10] overflow-hidden bg-stone-100 block">
+    <img
+      src={data.coverImage}
+      alt={`ร้านเหล้า นั่งชิล ${data.title} ${data.style} ย่านอ่าวอุดม`}
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      loading="lazy"
+    />
+    <div class="absolute top-3 left-3 flex gap-1.5 flex-wrap">
+      <span class="bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+        {data.style.split('/')[0].trim()}
+      </span>
+    </div>
+    <div class="absolute bottom-3 right-3 bg-stone-900/80 backdrop-blur-sm text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+      ⭐ <span>{avgRating} ({data.studentReviews.length} รีวิว)</span>
+    </div>
+  </a>
+
+  <div class="p-5 flex flex-col flex-grow">
+    <div class="flex items-center gap-2 text-xs text-stone-500 mb-2 font-medium">
+      <span>📍 {data.zone}</span>
+      <span>•</span>
+      <span>⏰ {data.openHours.split('(')[0].trim()}</span>
+    </div>
+
+    <h3 class="font-bold text-stone-900 text-lg leading-snug mb-2 group-hover:text-purple-600 transition-colors line-clamp-1">
+      <a href={`/nightlife/${slug}`}>
+        {data.title}
+      </a>
+    </h3>
+
+    <!-- Highlight Promotion badge -->
+    <div class="bg-purple-50 text-purple-700 text-xs font-medium px-3 py-2 rounded-xl mb-3 border border-purple-100 flex items-center gap-1.5">
+      <span>🎉</span>
+      <span class="truncate">{data.highlightPromo}</span>
+    </div>
+
+    <div class="flex justify-between items-center text-xs text-stone-600 mb-3">
+      <span>งบประมาณเฉลี่ย:</span>
+      <span class="font-bold text-stone-900">{data.pricePerPerson} / คน</span>
+    </div>
+
+    <!-- Latest Student Review -->
+    {data.studentReviews[0] && (
+      <div class="mt-auto pt-3 border-t border-stone-100 text-xs text-stone-500 italic bg-purple-50/30 p-2.5 rounded-lg border border-purple-100/50">
+        <span class="font-semibold text-stone-700 not-italic">💬 {data.studentReviews[0].author}:</span>
+        <p class="line-clamp-2 mt-0.5 text-stone-600">"{data.studentReviews[0].comment}"</p>
+      </div>
+    )}
+  </div>
+</article>

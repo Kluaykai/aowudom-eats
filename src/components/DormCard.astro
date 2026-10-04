@@ -1,0 +1,92 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  dorm: CollectionEntry<'dormitories'>;
+}
+
+const { dorm } = Astro.props;
+const { data, slug } = dorm;
+
+const avgRating = (data.studentReviews.reduce((sum, r) => sum + r.rating, 0) / data.studentReviews.length).toFixed(1);
+---
+
+<article
+  data-category="dorms"
+  class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group"
+>
+  <a href={`/dorms/${slug}`} class="relative aspect-[16/10] overflow-hidden bg-stone-100 block">
+    <img
+      src={data.coverImage}
+      alt={`หอพักและคอนโด ${data.title} โซน ${data.zone} ใกล้ ม.เกษตร ศรีราชา`}
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      loading="lazy"
+    />
+    <div class="absolute top-3 left-3 flex gap-1.5 flex-wrap">
+      <span class="bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+        {data.type}
+      </span>
+      {data.petFriendly && (
+        <span class="bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+          🐾 เลี้ยงสัตว์ได้
+        </span>
+      )}
+      {data.electricityRate.includes('ไฟหลวง') && (
+        <span class="bg-amber-500 text-stone-900 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+          ⚡ ไฟหลวง
+        </span>
+      )}
+    </div>
+    <div class="absolute bottom-3 right-3 bg-stone-900/80 backdrop-blur-sm text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+      ⭐ <span>{avgRating} ({data.studentReviews.length} รีวิว)</span>
+    </div>
+  </a>
+
+  <div class="p-5 flex flex-col flex-grow">
+    <div class="flex items-center gap-2 text-xs text-stone-500 mb-2 font-medium">
+      <span>📍 โซน: {data.zone}</span>
+      <span>•</span>
+      <span>🚶 {data.distanceToKU}</span>
+    </div>
+
+    <h3 class="font-bold text-stone-900 text-lg leading-snug mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
+      <a href={`/dorms/${slug}`}>
+        {data.title}
+      </a>
+    </h3>
+
+    <!-- Price & Rates -->
+    <div class="bg-stone-50 rounded-xl p-3 mb-3 border border-stone-100 text-xs flex justify-between items-center">
+      <div>
+        <span class="text-stone-400 block text-[11px]">ค่าเช่าเริ่มต้น</span>
+        <span class="font-bold text-blue-600 text-sm">{data.priceRange}</span>
+      </div>
+      <div class="text-right">
+        <span class="text-stone-400 block text-[11px]">ค่าไฟ</span>
+        <span class="font-semibold text-stone-700">{data.electricityRate}</span>
+      </div>
+    </div>
+
+    <!-- Facilities Tags -->
+    <div class="flex flex-wrap gap-1.5 mb-4">
+      {data.facilities.slice(0, 3).map((f) => (
+        <span class="text-[11px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md">
+          {f}
+        </span>
+      ))}
+      {data.facilities.length > 3 && (
+        <span class="text-[11px] text-stone-400 px-1 py-0.5">
+          +{data.facilities.length - 3}
+        </span>
+      )}
+    </div>
+
+    <!-- Latest Student Review snippet -->
+    {data.studentReviews[0] && (
+      <div class="mt-auto pt-3 border-t border-stone-100 text-xs text-stone-500 italic bg-amber-50/50 p-2.5 rounded-lg border border-amber-100/50">
+        <span class="font-semibold text-stone-700 not-italic">💬 {data.studentReviews[0].author}:</span>
+        <p class="line-clamp-2 mt-0.5 text-stone-600">"{data.studentReviews[0].comment}"</p>
+      </div>
+    )}
+  </div>
+</article>

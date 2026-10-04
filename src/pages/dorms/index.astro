@@ -1,0 +1,45 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import DormCard from '../../components/DormCard.astro';
+import { getCollection } from 'astro:content';
+
+const allDorms = await getCollection('dormitories');
+
+const zones = ['ซอยอ่าวอุดม', 'ประตู 1', 'ประตู 2', 'ประตู 3', 'เขาน้ำซับ'];
+---
+
+<MainLayout
+  title="รวมหอพัก คอนโด รอบ ม.เกษตร ศรีราชา ย่านอ่าวอุดม"
+  description="ค้นหาหอพักนักศึกษาและคอนโดมิเนียมรอบ ม.เกษตร ศรีราชา อ่าวอุดม เช็คค่าไฟ ค่าเช่า หอเลี้ยงสัตว์ได้ พร้อมรีวิวจริงจากนิสิต"
+>
+  <div class="max-w-6xl mx-auto px-4 py-10 md:py-14">
+    <!-- Header -->
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold mb-3">
+        🏢 หอพัก & คอนโดมิเนียม
+      </span>
+      <h1 class="text-3xl md:text-5xl font-extrabold text-stone-900 tracking-tight">
+        รวมหอพัก-คอนโด <span class="text-blue-600">ม.เกษตร ศรีราชา</span>
+      </h1>
+      <p class="mt-3 text-stone-600 text-sm md:text-base">
+        รวมหอพักรอบมหาวิทยาลัย ย่านอ่าวอุดม ประตู 1, 2, 3 และเขาน้ำซับ คัดกรองข้อมูลค่าไฟ เลี้ยงสัตว์ได้ พร้อมรีวิวจริงจากเด็กหอ
+      </p>
+
+      <!-- Zone quick tags -->
+      <div class="flex flex-wrap justify-center gap-2 mt-6">
+        {zones.map((z) => (
+          <span class="text-xs bg-white border border-stone-200 text-stone-700 px-3 py-1.5 rounded-full shadow-sm">
+            📍 โซน{z}
+          </span>
+        ))}
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {allDorms.map((dorm) => (
+        <DormCard dorm={dorm} />
+      ))}
+    </div>
+  </div>
+</MainLayout>

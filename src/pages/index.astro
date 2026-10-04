@@ -1,81 +1,221 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import FoodCard from '../components/FoodCard.astro';
+import DormCard from '../components/DormCard.astro';
+import NightlifeCard from '../components/NightlifeCard.astro';
 import SearchBar from '../components/SearchBar.astro';
 import { getCollection } from 'astro:content';
 
 const allReviews = await getCollection('reviews');
-// Sort by date descending
 const sortedReviews = allReviews.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 
-const featuredCategories = [
-  { name: 'ร้านปิดดึก', icon: '🌙', desc: 'เปิดถึงดึก คลายหิวรอบดึก', count: allReviews.filter(r => r.data.category === 'ร้านปิดดึก').length },
-  { name: 'งบประหยัด', icon: '💰', desc: 'ราคาเป็นมิตร สบายกระเป๋า', count: allReviews.filter(r => r.data.category === 'งบประหยัด').length },
-  { name: 'คาเฟ่', icon: '☕', desc: 'กาแฟดี Slow Bar นั่งทำงาน', count: allReviews.filter(r => r.data.category === 'คาเฟ่').length },
-  { name: 'ซีฟู้ด-ริมทะเล', icon: '🦀', desc: 'อาหารทะเลสด บรรยากาศติดริมน้ำ', count: allReviews.filter(r => r.data.category === 'ซีฟู้ด-ริมทะเล').length },
-];
-const metaDescription = "รวมร้านอาหารและแหล่งของกินอ่าวอุดม ม.เกษตร ศรีราชา ร้านเด็ดขวัญใจเด็กหอ คาเฟ่ ร้านปิดดึก อาหารตามสั่ง และซีฟู้ดรสเด็ด พร้อมพิกัดจริง";
+const allDorms = await getCollection('dormitories');
+const allNightlife = await getCollection('nightlife');
+
+const metaDescription = "รวมร้านอาหาร หอพัก คอนโด และร้านเหล้านั่งชิล ย่านอ่าวอุดม ม.เกษตร ศรีราชา แหล่งรวมข้อมูลสำหรับเด็กหอ เช็คค่าไฟ ค่าเช่า เมนูเด็ด และรีวิวจริง";
 ---
 
 <MainLayout
-  title="รวมร้านเด็ดของกินอ่าวอุดม ม.เกษตร ศรีราชา | SRC News"
+  title="รวมร้านเด็ดของกิน หอพัก คอนโด ร้านนั่งชิล อ่าวอุดม ม.เกษตร ศรีราชา | SRC News"
   description={metaDescription}
   exactTitle={true}
 >
   <!-- Hero Section -->
   <section class="relative overflow-hidden bg-white border-b border-stone-200">
     <div class="absolute inset-0 bg-gradient-to-b from-orange-50/40 via-transparent to-transparent pointer-events-none"></div>
-    <div class="max-w-6xl mx-auto px-4 py-14 md:py-20 relative text-center">
+    <div class="max-w-6xl mx-auto px-4 py-12 md:py-16 relative text-center">
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-600 text-xs font-semibold mb-6">
-        <span>✨ พิกัดร้านจริง คัดเฉพาะร้านเด็ดรอบรั้ว ม.เกษตร ศรีราชา</span>
+        <span>✨ ครบ จบ ย่านอ่าวอุดม | ม.เกษตรศาสตร์ ศรีราชา</span>
       </div>
-      <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-stone-900 tracking-tight leading-[1.2] max-w-3xl mx-auto">
-        รีวิวของกินย่าน <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-amber-500">อ่าวอุดม</span> ร้านจริง ข้อมูลจริง
+      <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-stone-900 tracking-tight leading-[1.2] max-w-4xl mx-auto">
+        ของกิน • หอพัก • ร้านนั่งชิล <br />
+        ย่าน <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-orange-500 to-amber-500">อ่าวอุดม ม.เกษตร ศรีราชา</span>
       </h1>
       <p class="mt-4 text-base md:text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed">
-        รวบรวมร้านอาหารเปิดดึก ร้านซีฟู้ดริมทะเล คาเฟ่ Slow Bar และร้านข้าวต้มรอบมหาวิทยาลัยเกษตรศาสตร์ ศรีราชา พร้อมเวลาเปิด-ปิดจริงและพิกัด Google Maps
+        ข้อมูลจริงจากเด็กหอ รวบรวมร้านอาหารเปิดดึก ร้านซีฟู้ดริมทะเล หอพักเลี้ยงสัตว์ได้ คอนโดไฟหลวง และบาร์ดนตรีสดผ่อนคลายหลังเลิกเรียน
       </p>
 
       <!-- Instant Search Bar -->
       <SearchBar />
 
-      <!-- Quick Category Buttons -->
-      <div class="mt-4 flex flex-wrap justify-center gap-3">
-        {featuredCategories.map((cat) => (
-          <a
-            href={`/category/${cat.name}`}
-            class="flex items-center gap-2.5 bg-stone-50 hover:bg-stone-100 border border-stone-200 hover:border-brand-500 px-4 py-2.5 rounded-xl transition-all shadow-sm group"
-          >
-            <span class="text-xl group-hover:scale-110 transition-transform">{cat.icon}</span>
-            <div class="text-left">
-              <span class="font-bold text-stone-800 text-sm block group-hover:text-brand-600 transition-colors">{cat.name}</span>
-              <span class="text-[11px] text-stone-400 block">{cat.desc} ({cat.count})</span>
-            </div>
+      <!-- Quick Directory Highlights -->
+      <div class="mt-6 flex flex-wrap justify-center gap-3">
+        <a
+          href="#explore-section"
+          data-tab-trigger="food"
+          class="flex items-center gap-2 bg-stone-50 hover:bg-orange-50 border border-stone-200 hover:border-brand-500 px-4 py-2.5 rounded-xl transition-all shadow-sm"
+        >
+          <span class="text-xl">🍜</span>
+          <span class="font-bold text-stone-800 text-sm">ของกิน ({sortedReviews.length} ร้าน)</span>
+        </a>
+        <a
+          href="#explore-section"
+          data-tab-trigger="dorms"
+          class="flex items-center gap-2 bg-stone-50 hover:bg-blue-50 border border-stone-200 hover:border-blue-500 px-4 py-2.5 rounded-xl transition-all shadow-sm"
+        >
+          <span class="text-xl">🏢</span>
+          <span class="font-bold text-stone-800 text-sm">หอพัก/คอนโด ({allDorms.length} แห่ง)</span>
+        </a>
+        <a
+          href="#explore-section"
+          data-tab-trigger="nightlife"
+          class="flex items-center gap-2 bg-stone-50 hover:bg-purple-50 border border-stone-200 hover:border-purple-500 px-4 py-2.5 rounded-xl transition-all shadow-sm"
+        >
+          <span class="text-xl">🍻</span>
+          <span class="font-bold text-stone-800 text-sm">ร้านเหล้า/นั่งชิล ({allNightlife.length} ร้าน)</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Filter Tabs & Content Section -->
+  <section id="explore-section" class="max-w-6xl mx-auto px-4 py-12 scroll-mt-20">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 border-b border-stone-200 pb-4">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">
+          สำรวจย่านอ่าวอุดมตามหมวดหมู่
+        </h2>
+        <p class="text-stone-500 text-sm mt-1">เลือกระหว่างร้านอาหาร หอพักนักศึกษา หรือสถานที่แฮงเอาต์</p>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div class="flex flex-wrap gap-2 p-1 bg-stone-100 rounded-xl" id="category-filter-buttons">
+        <button
+          type="button"
+          data-filter="all"
+          class="filter-btn active px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-all bg-white text-stone-900 shadow-sm"
+        >
+          ทั้งหมด
+        </button>
+        <button
+          type="button"
+          data-filter="food"
+          class="filter-btn px-4 py-2 rounded-lg text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-900 transition-all"
+        >
+          🍜 ร้านอาหาร ({sortedReviews.length})
+        </button>
+        <button
+          type="button"
+          data-filter="dorms"
+          class="filter-btn px-4 py-2 rounded-lg text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-900 transition-all"
+        >
+          🏢 หอพัก/คอนโด ({allDorms.length})
+        </button>
+        <button
+          type="button"
+          data-filter="nightlife"
+          class="filter-btn px-4 py-2 rounded-lg text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-900 transition-all"
+        >
+          🍻 ร้านเหล้า/นั่งชิล ({allNightlife.length})
+        </button>
+      </div>
+    </div>
+
+    <!-- FOOD SECTION -->
+    <div id="section-food" class="mb-14 category-group">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🍜</span>
+          <h3 class="text-xl md:text-2xl font-bold text-stone-900">ร้านอาหาร & คาเฟ่แนะนำ</h3>
+        </div>
+        <a href="/categories" class="text-sm font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1">
+          ดูหมวดหมู่อาหารทั้งหมด <span>→</span>
+        </a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {sortedReviews.slice(0, 6).map((review) => (
+          <FoodCard review={review} />
+        ))}
+      </div>
+      {sortedReviews.length > 6 && (
+        <div class="text-center mt-6">
+          <a href="/categories" class="inline-flex items-center gap-2 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold px-4 py-2 rounded-xl transition-colors">
+            ดูร้านอาหารเพิ่มเติมทั้งหมด ({sortedReviews.length} ร้าน) →
           </a>
+        </div>
+      )}
+    </div>
+
+    <!-- DORMS SECTION -->
+    <div id="section-dorms" class="mb-14 category-group">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🏢</span>
+          <h3 class="text-xl md:text-2xl font-bold text-stone-900">หอพัก & คอนโดมิเนียม ย่าน ม.เกษตร ศรีราชา</h3>
+        </div>
+        <a href="/dorms" class="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+          ดูหอพักทั้งหมด <span>→</span>
+        </a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {allDorms.map((dorm) => (
+          <DormCard dorm={dorm} />
+        ))}
+      </div>
+    </div>
+
+    <!-- NIGHTLIFE SECTION -->
+    <div id="section-nightlife" class="mb-14 category-group">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🍻</span>
+          <h3 class="text-xl md:text-2xl font-bold text-stone-900">ร้านเหล้า & แฮงเอาต์ นั่งชิลดนตรีสด</h3>
+        </div>
+        <a href="/nightlife" class="text-sm font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
+          ดูร้านนั่งชิลทั้งหมด <span>→</span>
+        </a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {allNightlife.map((bar) => (
+          <NightlifeCard bar={bar} />
         ))}
       </div>
     </div>
   </section>
 
-  <!-- Recent Articles Section -->
-  <section class="max-w-6xl mx-auto px-4 py-12">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
-      <div>
-        <h2 class="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">
-          ร้านแนะนำย่านอ่าวอุดม 🔥
-        </h2>
-        <p class="text-stone-500 text-sm mt-1">คัดร้านที่มีอยู่จริงในพื้นที่ พร้อมพิกัดและเมนูซิกเนเจอร์</p>
-      </div>
+  <!-- Filter Script -->
+  <script is:inline>
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const categoryGroups = {
+      food: document.getElementById('section-food'),
+      dorms: document.getElementById('section-dorms'),
+      nightlife: document.getElementById('section-nightlife'),
+    };
 
-      <a href="/categories" class="text-sm font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1">
-        ดูหมวดหมู่ทั้งหมด <span>→</span>
-      </a>
-    </div>
+    function applyFilter(target) {
+      filterButtons.forEach((b) => {
+        if (b.dataset.filter === target) {
+          b.className = 'filter-btn active px-4 py-2 rounded-lg text-xs md:text-sm font-bold transition-all bg-white text-stone-900 shadow-sm';
+        } else {
+          b.className = 'filter-btn px-4 py-2 rounded-lg text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-900 transition-all';
+        }
+      });
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {sortedReviews.map((review) => (
-        <FoodCard review={review} />
-      ))}
-    </div>
-  </section>
+      if (target === 'all') {
+        Object.values(categoryGroups).forEach((sec) => {
+          if (sec) sec.style.display = 'block';
+        });
+      } else {
+        Object.entries(categoryGroups).forEach(([key, sec]) => {
+          if (sec) {
+            sec.style.display = key === target ? 'block' : 'none';
+          }
+        });
+      }
+    }
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        applyFilter(btn.dataset.filter);
+      });
+    });
+
+    // Quick tag shortcuts
+    document.querySelectorAll('[data-tab-trigger]').forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const target = trigger.dataset.tabTrigger;
+        applyFilter(target);
+      });
+    });
+  </script>
 </MainLayout>
