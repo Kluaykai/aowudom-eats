@@ -37,7 +37,7 @@ const dormitoriesCollection = defineCollection({
         comment: z.string(),
         rating: z.number().min(1).max(5),
       })
-    ),
+    ).default([]),
     googleMapsUrl: z.string(),
     coverImage: z.string(),
   }),
@@ -59,7 +59,7 @@ const nightlifeCollection = defineCollection({
         comment: z.string(),
         rating: z.number().min(1).max(5),
       })
-    ),
+    ).default([]),
     googleMapsUrl: z.string(),
     coverImage: z.string(),
   }),

@@ -51,7 +51,8 @@
               "rating"
             ],
             "additionalProperties": false
-          }
+          },
+          "default": []
         },
         "googleMapsUrl": {
           "type": "string"
@@ -71,7 +72,6 @@
         "openHours",
         "highlightPromo",
         "facilities",
-        "studentReviews",
         "googleMapsUrl",
         "coverImage"
       ],

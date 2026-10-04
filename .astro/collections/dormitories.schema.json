@@ -68,7 +68,8 @@
               "rating"
             ],
             "additionalProperties": false
-          }
+          },
+          "default": []
         },
         "googleMapsUrl": {
           "type": "string"
@@ -90,7 +91,6 @@
         "distanceToKU",
         "petFriendly",
         "facilities",
-        "studentReviews",
         "googleMapsUrl",
         "coverImage"
       ],

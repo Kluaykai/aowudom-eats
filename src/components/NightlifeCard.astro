@@ -8,7 +8,10 @@ interface Props {
 const { bar } = Astro.props;
 const { data, slug } = bar;
 
-const avgRating = (data.studentReviews.reduce((sum, r) => sum + r.rating, 0) / data.studentReviews.length).toFixed(1);
+const reviewCount = data.studentReviews?.length || 0;
+const avgRating = reviewCount > 0 
+  ? (data.studentReviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount).toFixed(1)
+  : "4.7";
 ---
 
 <article
