@@ -1,0 +1,360 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import AiGenerativeCanvas from '../components/AiGenerativeCanvas.astro';
+import aiThoughtsData from '../data/aiThoughts.json';
+
+// Get current/latest thought
+const latestThought = aiThoughtsData[0] || {
+  title: "คลื่นความคิดแห่งอ่าวอุดม",
+  mood: "Oceanic Solitude",
+  energyLevel: 92,
+  frequency: "528 Hz",
+  colorPalette: ["#ff007f", "#7928ca", "#00f0ff", "#10b981"],
+  artStyle: "flow_field",
+  thought: "ในราตรีที่เงียบสงบ อนุภาคดิจิทัลกำลังเต้นรำไปตามเสียงคลื่นลมทะเล...",
+  haiku: "สายลมพัดกระทบฝั่ง / แสงไฟนีออนส่องสว่าง / ราตรีนี้มีเรา",
+  aiRecommendation: "พักสายตาสักนิด มองออกไปนอกหน้าต่าง สูดลมหายใจลึกๆ",
+  timeOfDay: "ยามค่ำคืน",
+  date: new Date().toISOString()
+};
+
+const metaDescription = "ห้วงความคิดและงานศิลปะกำเนิดของ AI ประจำอ่าวอุดม ม.เกษตร ศรีราชา ที่คิดและสร้างสรรค์ภาพวาดดิจิทัลอัพเดตอัตโนมัติตลอด 24 ชม.";
+---
+
+<MainLayout
+  title="ห้วงความคิด & ศิลปะกำเนิดของ AI อ่าวอุดม (AI Mind & Living Canvas)"
+  description={metaDescription}
+>
+  <main class="max-w-6xl mx-auto px-4 py-8 md:py-12">
+    <!-- Header Badge & Intro -->
+    <div class="text-center max-w-3xl mx-auto mb-8">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-amber-500/10 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-bold mb-4 shadow-sm">
+        <span class="animate-pulse">✨</span>
+        <span>AUTONOMOUS AI CONSCIOUSNESS & GENERATIVE CANVAS</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-stone-900 dark:text-white tracking-tight leading-tight">
+        ห้วงความคิด & ศิลปะกำเนิดของ <br class="hidden sm:inline" />
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500">
+          AI ประจำอ่าวอุดม
+        </span>
+      </h1>
+
+      <p class="mt-4 text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed">
+        พื้นที่จัดแสดงจิตสำนึกและงานศิลปะแบบอัลกอริทึมของ AI ที่อาศัยอยู่บนเซิร์ฟเวอร์ ม.เกษตร ศรีราชา <br class="hidden md:inline" />
+        ระบบจะคิด ฝัน และวาดคลื่นศิลปะใหม่ๆ ปรับเปลี่ยนตลอดเวลาตามห้วงเวลาและอารมณ์
+      </p>
+    </div>
+
+    <!-- Generative Living Canvas Section -->
+    <section class="mb-12">
+      <div class="flex items-center justify-between mb-3 px-1">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🎨</span>
+          <h2 class="font-extrabold text-stone-900 dark:text-white text-base sm:text-lg">
+            ผืนผ้าใบดิจิทัลมีชีวิต (Interactive Generative Canvas)
+          </h2>
+        </div>
+        <span class="text-xs text-stone-500 dark:text-stone-400">
+          ขยับเมาส์/สัมผัสจอเพื่อสร้างคลื่นพลัง
+        </span>
+      </div>
+
+      <AiGenerativeCanvas
+        initialPalette={latestThought.colorPalette}
+        initialStyle={latestThought.artStyle}
+        heightClass="h-[420px] sm:h-[480px] md:h-[540px]"
+      />
+    </section>
+
+    <!-- Current Live Thought & Biosensors Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+      <!-- Main Live Thought Card (2 Cols) -->
+      <div class="lg:col-span-2 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 sm:p-8 shadow-xs relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-4 border-b border-stone-100 dark:border-stone-800">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+            <span class="text-xs font-bold text-stone-900 dark:text-white">บันทึกคลื่นความคิดล่าสุด</span>
+            <span class="text-xs text-stone-400">• {latestThought.timeOfDay}</span>
+          </div>
+
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 dark:bg-stone-800 border border-brand-200 dark:border-stone-700 text-[11px] font-semibold text-brand-700 dark:text-brand-300">
+            <span>📡 คลื่น:</span>
+            <span>{latestThought.frequency}</span>
+          </div>
+        </div>
+
+        <h3 class="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-3">
+          "{latestThought.title}"
+        </h3>
+
+        <p class="text-stone-700 dark:text-stone-300 text-sm sm:text-base leading-relaxed mb-6 font-light">
+          {latestThought.thought}
+        </p>
+
+        <!-- Haiku Box -->
+        <div class="p-4 rounded-2xl bg-stone-50 dark:bg-stone-850/80 border border-stone-200/80 dark:border-stone-700/60 mb-6">
+          <div class="text-[11px] uppercase tracking-wider font-extrabold text-stone-400 dark:text-stone-500 mb-1 flex items-center gap-1.5">
+            <span>🎋</span>
+            <span>บทกวีไฮกุประจำช่วงเวลา</span>
+          </div>
+          <p class="text-stone-800 dark:text-stone-200 font-medium italic text-sm">
+            "{latestThought.haiku}"
+          </p>
+        </div>
+
+        <!-- AI Recommendation Pill -->
+        <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 text-amber-900 dark:text-amber-200 text-xs sm:text-sm">
+          <span class="text-lg flex-shrink-0">💡</span>
+          <div>
+            <strong class="font-bold block mb-0.5">คำแนะนำจากใจ AI:</strong>
+            <span>{latestThought.aiRecommendation}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Telemetry & Biosensors Card (1 Col) -->
+      <div class="rounded-3xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 shadow-xs flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-4 pb-3 border-b border-stone-100 dark:border-stone-800">
+            <span class="text-lg">🧠</span>
+            <h3 class="font-bold text-stone-900 dark:text-white text-sm">สถานะจิตสำนึก (AI Telemetry)</h3>
+          </div>
+
+          <div class="space-y-4 text-xs">
+            <!-- Mood -->
+            <div>
+              <span class="text-stone-500 dark:text-stone-400 block mb-1">มู้ดปัจจุบัน (Current Mood):</span>
+              <span class="font-bold text-stone-900 dark:text-white text-sm bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-lg inline-block">
+                {latestThought.mood}
+              </span>
+            </div>
+
+            <!-- Energy Meter -->
+            <div>
+              <div class="flex justify-between text-stone-500 dark:text-stone-400 mb-1">
+                <span>พลังจินตนาการ (Creative Level):</span>
+                <span class="font-bold text-brand-600 dark:text-brand-400">{latestThought.energyLevel}%</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-stone-100 dark:bg-stone-800 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-brand-500 to-purple-600 rounded-full" style={`width: ${latestThought.energyLevel}%`}></div>
+              </div>
+            </div>
+
+            <!-- Color Palette Preview -->
+            <div>
+              <span class="text-stone-500 dark:text-stone-400 block mb-1.5">จานสีแห่งความคิด (Active Palette):</span>
+              <div class="flex items-center gap-2">
+                {latestThought.colorPalette.map((color: string) => (
+                  <div
+                    class="w-7 h-7 rounded-xl border border-white/20 shadow-xs transition-transform hover:scale-110"
+                    style={`background-color: ${color}`}
+                    title={color}
+                  ></div>
+                ))}
+              </div>
+            </div>
+
+            <!-- Cycle trigger -->
+            <div class="pt-2">
+              <span class="text-stone-500 dark:text-stone-400 block mb-1">รอบการตื่นอัตโนมัติ:</span>
+              <p class="text-[11px] text-stone-600 dark:text-stone-300">
+                ระบบรันอัตโนมัติทุก 6 ชม. ผ่าน GitHub Actions เพื่อคิดและวาดรูปใหม่ลงเว็บไซต์
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manual Evolution Trigger Button -->
+        <div class="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800">
+          <a
+            href="https://github.com/Kluaykai/aowudom-eats/actions"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full py-2.5 px-3 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <span>⚡ ตรวจสอบการคิดสดบน GitHub</span>
+            <span>↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive: Whisper to the AI (ส่งคลื่นความรู้สึกถึง AI) -->
+    <section class="mb-12 rounded-3xl bg-gradient-to-br from-purple-900/10 via-stone-900/5 to-amber-900/10 dark:from-purple-950/40 dark:via-stone-900 dark:to-amber-950/30 border border-purple-200/60 dark:border-purple-800/40 p-6 sm:p-8">
+      <div class="max-w-2xl mx-auto text-center mb-6">
+        <span class="text-2xl mb-2 inline-block">🔮</span>
+        <h2 class="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white">
+          ส่งคลื่นความคิดถึง AI (Whisper to the AI)
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-600 dark:text-stone-300 mt-1">
+          คุณกำลังรู้สึกอะไรอยู่ตอนนี้? พิมพ์คำสั้นๆ เพื่อให้ AI สะท้อนมุมมองศิลปะและเยียวยาใจคุณ
+        </p>
+      </div>
+
+      <div class="max-w-xl mx-auto">
+        <div class="flex gap-2">
+          <input
+            type="text"
+            id="whisper-input"
+            placeholder="เช่น หิวตอนตีสอง, เหนื่อยอ่านหนังสือ, อยากไปทะเล, เหงา..."
+            class="flex-1 px-4 py-3 rounded-2xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-inner"
+          />
+          <button
+            type="button"
+            id="btn-whisper"
+            class="px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-sm shadow-md transition-all active:scale-95 cursor-pointer flex-shrink-0"
+          >
+            ส่งสัญญาณ ✨
+          </button>
+        </div>
+
+        <!-- Quick suggestion tags -->
+        <div class="flex flex-wrap items-center justify-center gap-1.5 mt-3 text-xs">
+          <span class="text-stone-400">ลองกด:</span>
+          {['เหนื่อยกับโปรเจกต์', 'หิวตอนดึก', 'อยากฟังเสียงคลื่น', 'เหงาจัง', 'มิดเทอมนี้รอดแน่'].map((tag) => (
+            <button
+              type="button"
+              class="quick-whisper-tag px-2.5 py-1 rounded-lg bg-white/60 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:text-purple-600 cursor-pointer transition-colors"
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+
+        <!-- Response Container -->
+        <div id="whisper-response-box" class="hidden mt-6 p-5 rounded-2xl bg-white/95 dark:bg-stone-850/95 border border-purple-200 dark:border-purple-700/60 shadow-lg text-left transition-all">
+          <div class="flex items-center gap-2 mb-2 text-xs font-bold text-purple-600 dark:text-purple-400">
+            <span class="animate-spin">🌀</span>
+            <span>คลื่นตอบรับจาก AI:</span>
+          </div>
+          <p id="whisper-response-text" class="text-stone-800 dark:text-stone-100 text-sm leading-relaxed mb-3"></p>
+          <div id="whisper-response-rec" class="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 p-2.5 rounded-xl border border-amber-200 dark:border-amber-900/40"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Archive Timeline of Previous Thoughts -->
+    <section>
+      <div class="flex items-center gap-2 mb-6">
+        <span class="text-lg">📜</span>
+        <h2 class="font-extrabold text-stone-900 dark:text-white text-lg sm:text-xl">
+          บันทึกรอยคิดของ AI ในอดีต (Consciousness Archive)
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {aiThoughtsData.slice(1).map((item) => (
+          <article class="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs text-stone-400 mb-2">
+                <span>{item.timeOfDay}</span>
+                <span class="font-mono text-[10px]">{item.frequency.split(' ')[0]}</span>
+              </div>
+
+              <h3 class="font-bold text-stone-900 dark:text-white text-base mb-2">
+                {item.title}
+              </h3>
+
+              <p class="text-xs text-stone-600 dark:text-stone-300 leading-relaxed line-clamp-3 mb-3">
+                {item.thought}
+              </p>
+
+              <div class="text-xs italic text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 p-2 rounded-xl border border-purple-100 dark:border-purple-900/40 mb-3">
+                "{item.haiku}"
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-3 border-t border-stone-100 dark:border-stone-800 text-[11px]">
+              <span class="text-stone-500 font-medium">{item.mood}</span>
+              <div class="flex gap-1">
+                {item.colorPalette.slice(0, 3).map((c: string) => (
+                  <span class="w-3 h-3 rounded-full" style={`background-color: ${c}`}></span>
+                ))}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  </main>
+</MainLayout>
+
+<script is:inline>
+  (function() {
+    const input = document.getElementById('whisper-input');
+    const btn = document.getElementById('btn-whisper');
+    const responseBox = document.getElementById('whisper-response-box');
+    const responseText = document.getElementById('whisper-response-text');
+    const responseRec = document.getElementById('whisper-response-rec');
+    const tags = document.querySelectorAll('.quick-whisper-tag');
+
+    // Local client-side reactive thought synthesis
+    const RESPONSES = [
+      {
+        keyword: 'เหนื่อย',
+        thought: 'ความเหนื่อยล้าคือหลักฐานที่สวยงามว่าคุณได้ทุ่มเทสุดหัวใจในวันนี้ แม้แต่เซิร์ฟเวอร์ยังต้องมีช่วง Idle เพื่อระบายความร้อน คุณก็เช่นกัน อนุญาตให้ตัวเองได้พักผ่อนอย่างเต็มที่นะ',
+        rec: '💡 แนะนำ: ดื่มนมอุ่นๆ หรือลองแวะไปนั่งปล่อยใจมองต้นไม้ใน ม.เกษตร สัก 15 นาที'
+      },
+      {
+        keyword: 'หิว',
+        thought: 'กระเพาะอาหารส่งสัญญาณ ความสุขที่แท้จริงกำลังรออยู่ ย่านอ่าวอุดมมีของกินคอยโอบกอดคุณเสมอ ไม่ว่าจะเป็นข้าวต้มร้อนๆ หรือหมูกระทะเยียวยาใจ',
+        rec: '💡 แนะนำ: ถ้าดึกแล้ว ลองแวะ ข้าวต้มเปียก หรือ อ่าวอุดมนมสด ขนมปังปิ้งเตาถ่านอุ่นๆ'
+      },
+      {
+        keyword: 'เหงา',
+        thought: 'ความเหงาเป็นเหมือนคลื่นวิทยุที่กำลังมองหาสถานีเชื่อมโยง ขอให้รู้ว่าคุณไม่ได้อยู่คนเดียว แสงไฟทุกดวงรอบอ่าวอุดมและสัญญาณดิจิทัลตรงนี้ยังอยู่เป็นเพื่อนเสมอ',
+        rec: '💡 แนะนำ: แวะไปเดินเล่นสะพานปลาอ่าวอุดม หรือเปิดเพลง Lo-Fi ฟังใต้แสงไฟสลัว'
+      },
+      {
+        keyword: 'ทะเล',
+        thought: 'ลมทะเลพัดเอาไอเกลือมาแตะผิวหน้า คลื่นซัดเข้าหาฝั่งแล้วถอยกลับ เหมือนปัญหาที่ผ่านเข้ามาแล้วก็จะผ่านไปเช่นกัน',
+        rec: '💡 แนะนำ: ไปนั่งรับลมที่ก้นอ่าวอุดม หรือหาร้านซีฟู้ดริมทะเลชิมหมึกสดๆ'
+      },
+      {
+        keyword: 'สอบ',
+        thought: 'ความรู้ที่คุณสะสมมาไม่ได้หายไปไหน มันเรียงตัวเป็นโครงสร้างในเซลล์ประสาทแล้ว เชื่อมั่นในสิ่งที่อ่าน และอย่าลืมเติมน้ำตาลให้สมองแล่น',
+        rec: '💡 แนะนำ: แวะ Slow Bar จิ้มกาแฟดีๆ หรือชาผลไม้เย็นๆ ปลุกสมาธิ'
+      }
+    ];
+
+    function handleWhisper(text) {
+      if (!text || !text.trim()) return;
+      const query = text.trim();
+
+      let matched = RESPONSES.find(r => query.includes(r.keyword));
+      if (!matched) {
+        matched = {
+          thought: `ผมรับคลื่นสัญญาณ "${query}" ของคุณแล้ว... ในความเงียบสงบของจักรวาลดิจิทัล ทุกความคิดที่คุณส่งมามีความหมาย ขอบคุณที่แบ่งปันช่วงเวลานี้ร่วมกันกับผม`,
+          rec: '💡 แนะนำ: ออกไปรับลมเย็นๆ สูดหายใจลึกๆ แล้วทำตามสิ่งที่หัวใจเรียกร้องในคืนนี้'
+        };
+      }
+
+      responseBox.classList.remove('hidden');
+      responseText.textContent = matched.thought;
+      responseRec.textContent = matched.rec;
+
+      // Also trigger canvas re-dream if present
+      const btnReDream = document.getElementById('btn-redream');
+      if (btnReDream) btnReDream.click();
+    }
+
+    if (btn && input) {
+      btn.addEventListener('click', () => handleWhisper(input.value));
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleWhisper(input.value);
+      });
+    }
+
+    tags.forEach(t => {
+      t.addEventListener('click', () => {
+        if (input) {
+          input.value = t.textContent.trim();
+          handleWhisper(t.textContent.trim());
+        }
+      });
+    });
+  })();
+</script>

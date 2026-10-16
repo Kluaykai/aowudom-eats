@@ -29,15 +29,19 @@ const searchKeywords = [
   data-searchable-card
   data-keywords={searchKeywords}
   data-category="dorms"
-  class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group"
+  class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group relative"
 >
-  <a href={`/dorms/${slug}`} class="relative aspect-[16/10] overflow-hidden bg-stone-100 block">
-    <img
-      src={data.coverImage}
-      alt={`หอพักและคอนโด ${data.title} โซน ${data.zone} ใกล้ ม.เกษตร ศรีราชา`}
-      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-      loading="lazy"
-    />
+  <div class="relative aspect-[16/10] overflow-hidden bg-stone-100 dark:bg-stone-800 block">
+    <a href={`/dorms/${slug}`} class="block w-full h-full">
+      <img
+        src={data.coverImage}
+        alt={`หอพักและคอนโด ${data.title} โซน ${data.zone} ใกล้ ม.เกษตร ศรีราชา`}
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        loading="lazy"
+      />
+    </a>
+
+    <!-- Top Left Badges -->
     <div class="absolute top-3 left-3 flex gap-1.5 flex-wrap">
       <span class="bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
         {data.type}
@@ -53,40 +57,61 @@ const searchKeywords = [
         </span>
       )}
     </div>
+
+    <!-- Heart Bookmark Button -->
+    <button
+      type="button"
+      data-fav-toggle-btn
+      data-item-id={slug}
+      data-item-title={data.title}
+      data-item-category={data.type}
+      data-item-image={data.coverImage}
+      data-item-price={data.priceRange}
+      data-item-url={`/dorms/${slug}`}
+      data-item-maps={data.googleMapsUrl}
+      class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm flex items-center justify-center text-stone-400 hover:text-rose-500 shadow-sm transition-all hover:scale-110 active:scale-95 cursor-pointer z-10"
+      title="บันทึกหอพักนี้"
+      aria-label="บันทึกหอพักนี้"
+    >
+      <svg class="w-4 h-4 fill-current transition-colors" viewBox="0 0 24 24">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+    </button>
+
     <div class="absolute bottom-3 right-3 bg-stone-900/80 backdrop-blur-sm text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
       ⭐ <span>{avgRating} ({data.studentReviews.length} รีวิว)</span>
     </div>
-  </a>
+  </div>
 
   <div class="p-5 flex flex-col flex-grow">
-    <div class="flex items-center gap-2 text-xs text-stone-500 mb-2 font-medium">
+    <div class="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400 mb-2 font-medium">
       <span>📍 โซน: {data.zone}</span>
       <span>•</span>
       <span>🚶 {data.distanceToKU}</span>
     </div>
 
-    <h3 class="font-bold text-stone-900 text-lg leading-snug mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
+    <h3 class="font-bold text-stone-900 dark:text-white text-lg leading-snug mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
       <a href={`/dorms/${slug}`}>
         {data.title}
       </a>
     </h3>
 
     <!-- Price & Rates -->
-    <div class="bg-stone-50 rounded-xl p-3 mb-3 border border-stone-100 text-xs flex justify-between items-center">
+    <div class="bg-stone-50 dark:bg-stone-800/60 rounded-2xl p-3 mb-3 border border-stone-100 dark:border-stone-700/60 text-xs flex justify-between items-center">
       <div>
         <span class="text-stone-400 block text-[11px]">ค่าเช่าเริ่มต้น</span>
-        <span class="font-bold text-blue-600 text-sm">{data.priceRange}</span>
+        <span class="font-bold text-blue-600 dark:text-blue-400 text-sm">{data.priceRange}</span>
       </div>
       <div class="text-right">
         <span class="text-stone-400 block text-[11px]">ค่าไฟ</span>
-        <span class="font-semibold text-stone-700">{data.electricityRate}</span>
+        <span class="font-semibold text-stone-700 dark:text-stone-300">{data.electricityRate}</span>
       </div>
     </div>
 
     <!-- Facilities Tags -->
     <div class="flex flex-wrap gap-1.5 mb-4">
       {data.facilities.slice(0, 3).map((f) => (
-        <span class="text-[11px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded-md">
+        <span class="text-[11px] bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 px-2 py-0.5 rounded-lg">
           {f}
         </span>
       ))}
@@ -99,9 +124,9 @@ const searchKeywords = [
 
     <!-- Latest Student Review snippet -->
     {data.studentReviews[0] && (
-      <div class="mt-auto pt-3 border-t border-stone-100 text-xs text-stone-500 italic bg-amber-50/50 p-2.5 rounded-lg border border-amber-100/50">
-        <span class="font-semibold text-stone-700 not-italic">💬 {data.studentReviews[0].author}:</span>
-        <p class="line-clamp-2 mt-0.5 text-stone-600">"{data.studentReviews[0].comment}"</p>
+      <div class="mt-auto pt-3 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-500 dark:text-stone-400 italic bg-amber-50/50 dark:bg-stone-800/40 p-2.5 rounded-xl border border-amber-100/50 dark:border-stone-700">
+        <span class="font-semibold text-stone-700 dark:text-stone-300 not-italic">💬 {data.studentReviews[0].author}:</span>
+        <p class="line-clamp-2 mt-0.5 text-stone-600 dark:text-stone-400">"{data.studentReviews[0].comment}"</p>
       </div>
     )}
   </div>

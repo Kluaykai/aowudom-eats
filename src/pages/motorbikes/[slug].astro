@@ -25,44 +25,63 @@ const { Content } = await bike.render();
   image={data.coverImage}
 >
   <article class="max-w-4xl mx-auto px-4 py-8 md:py-12">
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-      <a href="/" class="hover:text-red-600">หน้าแรก</a>
-      <span>/</span>
-      <a href="/motorbikes" class="hover:text-red-600">ซ่อมมอเตอร์ไซค์</a>
-      <span>/</span>
-      <span class="text-stone-700 truncate">{data.shopName}</span>
-    </nav>
+    <!-- Breadcrumb & Bookmark -->
+    <div class="flex items-center justify-between mb-6 gap-2">
+      <nav class="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400 overflow-x-auto whitespace-nowrap">
+        <a href="/" class="hover:text-red-600 dark:hover:text-red-400">หน้าแรก</a>
+        <span>/</span>
+        <a href="/motorbikes" class="hover:text-red-600 dark:hover:text-red-400">ซ่อมมอเตอร์ไซค์</a>
+        <span>/</span>
+        <span class="text-stone-700 dark:text-stone-200 truncate">{data.shopName}</span>
+      </nav>
+
+      <button
+        type="button"
+        data-fav-toggle-btn
+        data-item-id={bike.slug}
+        data-item-title={data.shopName}
+        data-item-category="ซ่อมมอไซค์"
+        data-item-image={data.coverImage}
+        data-item-price={data.priceEstimate}
+        data-item-url={`/motorbikes/${bike.slug}`}
+        data-item-maps={data.googleMapsUrl}
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs font-bold text-stone-600 dark:text-stone-300 hover:text-rose-500 shadow-2xs hover:scale-105 active:scale-95 transition-all cursor-pointer flex-shrink-0"
+        title="บันทึกร้านนี้"
+      >
+        <span class="text-rose-500">❤️</span>
+        <span>บันทึก</span>
+      </button>
+    </div>
 
     <!-- Header -->
     <header class="mb-8">
       <div class="flex items-center gap-2 mb-3">
-        <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+        <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-2xs">
           🛵 ซ่อมมอเตอร์ไซค์
         </span>
         {data.emergencyService && (
-          <span class="bg-amber-500 text-stone-900 text-xs font-bold px-3 py-1 rounded-full">
-            🚨 บริการนอกสถานที่
+          <span class="bg-amber-500 text-stone-900 text-xs font-bold px-3 py-1 rounded-full shadow-2xs">
+            🚨 บริการนอกสถานที่ 24 ชม.
           </span>
         )}
-        <span class="bg-stone-100 text-stone-700 text-xs font-semibold px-3 py-1 rounded-full">
+        <span class="bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-semibold px-3 py-1 rounded-full">
           📍 โซน: {data.zone}
         </span>
       </div>
 
-      <h1 class="text-2xl md:text-4xl font-extrabold text-stone-900 leading-snug tracking-tight">
+      <h1 class="text-2xl md:text-4xl font-extrabold text-stone-900 dark:text-white leading-snug tracking-tight">
         {data.title}
       </h1>
 
-      <div class="flex flex-wrap items-center gap-4 text-xs md:text-sm text-stone-500 mt-3 pb-6 border-b border-stone-200">
-        <span>🛵 ระยะทาง: <strong class="text-stone-800">{data.distanceToKU}</strong></span>
+      <div class="flex flex-wrap items-center gap-4 text-xs md:text-sm text-stone-500 dark:text-stone-400 mt-3 pb-6 border-b border-stone-200 dark:border-stone-800">
+        <span>🛵 ระยะทาง: <strong class="text-stone-800 dark:text-stone-200">{data.distanceToKU}</strong></span>
         <span>•</span>
-        <span>⏰ เวลาทำการ: <strong class="text-stone-800">{data.openHours}</strong></span>
+        <span>⏰ เวลาทำการ: <strong class="text-stone-800 dark:text-stone-200">{data.openHours}</strong></span>
       </div>
     </header>
 
     <!-- Cover Image -->
-    <div class="relative rounded-2xl overflow-hidden aspect-[16/9] mb-8 shadow-sm">
+    <div class="relative rounded-3xl overflow-hidden aspect-[16/9] mb-8 shadow-sm">
       <img
         src={data.coverImage}
         alt={`ร้านซ่อมมอเตอร์ไซค์ ${data.shopName} ย่านอ่าวอุดม`}
@@ -71,7 +90,7 @@ const { Content } = await bike.render();
     </div>
 
     <!-- Quick Info Box -->
-    <div class="bg-white rounded-2xl border border-stone-200 p-6 shadow-sm mb-10">
+    <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-6 shadow-sm mb-10">
       <!-- Call Button Banner -->
       <div class="bg-emerald-600 text-white p-5 rounded-2xl mb-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
@@ -87,32 +106,32 @@ const { Content } = await bike.render();
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <div class="bg-stone-50 p-4 rounded-xl border border-stone-100">
-          <span class="text-stone-400 text-xs block mb-1">ราคาประเมินเบื้องต้น</span>
-          <span class="text-base font-bold text-stone-800">{data.priceEstimate}</span>
+        <div class="bg-stone-50 dark:bg-stone-800/60 p-4 rounded-2xl border border-stone-100 dark:border-stone-700">
+          <span class="text-stone-400 dark:text-stone-400 text-xs block mb-1">ราคาประเมินเบื้องต้น</span>
+          <span class="text-base font-bold text-stone-800 dark:text-stone-200">{data.priceEstimate}</span>
         </div>
-        <div class="bg-stone-50 p-4 rounded-xl border border-stone-100">
-          <span class="text-stone-400 text-xs block mb-1">เวลาให้บริการ</span>
-          <span class="text-base font-bold text-stone-800">{data.openHours}</span>
+        <div class="bg-stone-50 dark:bg-stone-800/60 p-4 rounded-2xl border border-stone-100 dark:border-stone-700">
+          <span class="text-stone-400 dark:text-stone-400 text-xs block mb-1">เวลาให้บริการ</span>
+          <span class="text-base font-bold text-stone-800 dark:text-stone-200">{data.openHours}</span>
         </div>
       </div>
 
       <!-- Services List -->
-      <h3 class="text-sm font-bold text-stone-800 mb-3">บริการที่มีให้:</h3>
+      <h3 class="text-sm font-bold text-stone-800 dark:text-stone-200 mb-3">บริการที่มีให้:</h3>
       <div class="flex flex-wrap gap-2 mb-6">
         {data.services.map((s) => (
-          <span class="bg-stone-100 text-stone-700 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1">
+          <span class="bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs px-3 py-1.5 rounded-xl flex items-center gap-1">
             <span>✓</span> {s}
           </span>
         ))}
       </div>
 
-      <div class="flex justify-end">
+      <div class="flex justify-end pt-4 border-t border-stone-100 dark:border-stone-800">
         <a
           href={data.googleMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors shadow-sm"
+          class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-xl transition-colors shadow-sm"
         >
           <span>📍</span> ดูพิกัดบน Google Maps
         </a>
@@ -120,7 +139,7 @@ const { Content } = await bike.render();
     </div>
 
     <!-- Article Content -->
-    <div class="prose prose-stone lg:prose-lg max-w-none text-stone-700 leading-relaxed font-normal mb-12">
+    <div class="prose prose-stone dark:prose-invert lg:prose-lg max-w-none text-stone-700 dark:text-stone-300 leading-relaxed font-normal mb-12">
       <Content />
     </div>
   </article>

@@ -1,0 +1,86 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import CampusMap from '../components/CampusMap.astro';
+import { allLocations } from '../data/locationsData';
+
+const foodCount = allLocations.filter((l) => l.type === 'food').length;
+const dormCount = allLocations.filter((l) => l.type === 'dorm').length;
+const nightlifeCount = allLocations.filter((l) => l.type === 'nightlife').length;
+const bikeCount = allLocations.filter((l) => l.type === 'motorbike').length;
+---
+
+<MainLayout
+  title="แผนที่พิกัด ม.เกษตร ศรีราชา & ย่านอ่าวอุดม | ร้านอาหาร หอพัก ร้านเหล้า ซ่อมมอไซค์"
+  description="แผนที่พิกัดรวมชีวิตเด็กหอ ม.เกษตร ศรีราชา และอ่าวอุดม ดูพิกัดร้านอาหาร หอพัก คอนโดมิเนียม ร้านนั่งชิล และร้านซ่อมมอเตอร์ไซค์บนแผนที่จริง"
+>
+  <div class="max-w-6xl mx-auto px-4 py-8 md:py-10">
+    <!-- Header -->
+    <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-stone-800 text-emerald-600 dark:text-emerald-400 text-xs font-bold mb-2">
+          <span>🗺️ แผนที่พิกัดไลฟ์สไตล์เด็กหอ</span>
+        </div>
+        <h1 class="text-2xl md:text-4xl font-extrabold text-stone-900 dark:text-white tracking-tight">
+          แผนที่พิกัด <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">ม.เกษตร ศรีราชา & อ่าวอุดม</span>
+        </h1>
+        <p class="text-stone-600 dark:text-stone-300 text-xs md:text-sm mt-1 max-w-2xl">
+          คลิกหมุดเพื่อดูข้อมูลร้านอาหาร หอพัก ร้านเหล้า หรือร้านซ่อมมอไซค์ พร้อมระบบนำทาง Google Maps และค้นหาตำแหน่งปัจจุบันของคุณ
+        </p>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="flex items-center gap-2 text-xs font-bold">
+        <span class="bg-orange-50 dark:bg-stone-800 text-orange-600 dark:text-orange-400 px-2.5 py-1 rounded-lg border border-orange-200/50 dark:border-stone-700">
+          🍜 {foodCount} ร้าน
+        </span>
+        <span class="bg-blue-50 dark:bg-stone-800 text-blue-600 dark:text-blue-400 px-2.5 py-1 rounded-lg border border-blue-200/50 dark:border-stone-700">
+          🏢 {dormCount} หอ
+        </span>
+        <span class="bg-purple-50 dark:bg-stone-800 text-purple-600 dark:text-purple-400 px-2.5 py-1 rounded-lg border border-purple-200/50 dark:border-stone-700">
+          🍻 {nightlifeCount} บาร์
+        </span>
+        <span class="bg-red-50 dark:bg-stone-800 text-red-600 dark:text-red-400 px-2.5 py-1 rounded-lg border border-red-200/50 dark:border-stone-700">
+          🛵 {bikeCount} อู่
+        </span>
+      </div>
+    </div>
+
+    <!-- Map Component -->
+    <CampusMap heightClass="h-[600px] md:h-[680px]" showFilters={true} />
+
+    <!-- Landmark quick navigation cards -->
+    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white dark:bg-stone-900 rounded-2xl p-4 border border-stone-200 dark:border-stone-800 shadow-xs">
+        <div class="w-8 h-8 rounded-xl bg-orange-100 dark:bg-stone-800 text-orange-600 flex items-center justify-center font-bold mb-2">
+          1
+        </div>
+        <h4 class="font-bold text-stone-900 dark:text-white text-sm">โซนประตู 1 สุขุมวิท</h4>
+        <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">คอนโดมิเนียมใหม่ Atmoz, dcondo, Kensington, คาเฟ่ Structure, ราเมงตรงข้ามไทยออยล์</p>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl p-4 border border-stone-200 dark:border-stone-800 shadow-xs">
+        <div class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-stone-800 text-blue-600 flex items-center justify-center font-bold mb-2">
+          3
+        </div>
+        <h4 class="font-bold text-stone-900 dark:text-white text-sm">โซนประตู 3 หลังมอ</h4>
+        <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">แหล่งของกินมื้อดึก ก๋วยเตี๋ยวเรือ ข้าวต้มเปี๊ยก เจี๊ยกหม่าล่า หอมเตา เค้ก Flour Room</p>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl p-4 border border-stone-200 dark:border-stone-800 shadow-xs">
+        <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-stone-800 text-purple-600 flex items-center justify-center font-bold mb-2">
+          🏘️
+        </div>
+        <h4 class="font-bold text-stone-900 dark:text-white text-sm">ชุมชนซอยอ่าวอุดม</h4>
+        <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">อ่าวอุดมนมสด ตลาดโต้รุ่งบังโกะฮัง อิ๊กคิวมู๋กระทะ 711 Bar อ่าวอุดมสโมสร</p>
+      </div>
+
+      <div class="bg-white dark:bg-stone-900 rounded-2xl p-4 border border-stone-200 dark:border-stone-800 shadow-xs">
+        <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-stone-800 text-emerald-600 flex items-center justify-center font-bold mb-2">
+          🌊
+        </div>
+        <h4 class="font-bold text-stone-900 dark:text-white text-sm">ก้นอ่าว & สะพานปลา</h4>
+        <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">ป้าพัดซีฟู้ด ป้าหวานผัดไทย ร้านลับหมึกช็อต เฒ่าทะเลซีฟู้ด จุดชมพระอาทิตย์ตกริมทะเล</p>
+      </div>
+    </div>
+  </div>
+</MainLayout>

@@ -27,54 +27,82 @@ const searchKeywords = [
   data-searchable-card
   data-keywords={searchKeywords}
   data-category="nightlife"
-  class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group"
+  data-open-hours={data.openHours}
+  class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group relative"
 >
-  <a href={`/nightlife/${slug}`} class="relative aspect-[16/10] overflow-hidden bg-stone-100 block">
-    <img
-      src={data.coverImage}
-      alt={`ร้านเหล้า นั่งชิล ${data.title} ${data.style} ย่านอ่าวอุดม`}
-      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-      loading="lazy"
-    />
+  <div class="relative aspect-[16/10] overflow-hidden bg-stone-100 dark:bg-stone-800 block">
+    <a href={`/nightlife/${slug}`} class="block w-full h-full">
+      <img
+        src={data.coverImage}
+        alt={`ร้านเหล้า นั่งชิล ${data.title} ${data.style} ย่านอ่าวอุดม`}
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        loading="lazy"
+      />
+    </a>
+
     <div class="absolute top-3 left-3 flex gap-1.5 flex-wrap">
       <span class="bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
         {data.style.split('/')[0].trim()}
       </span>
     </div>
-    <div class="absolute bottom-3 right-3 bg-stone-900/80 backdrop-blur-sm text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
-      ⭐ <span>{avgRating} ({data.studentReviews.length} รีวิว)</span>
+
+    <!-- Heart Bookmark Button -->
+    <button
+      type="button"
+      data-fav-toggle-btn
+      data-item-id={slug}
+      data-item-title={data.title}
+      data-item-category="ร้านนั่งชิล"
+      data-item-image={data.coverImage}
+      data-item-price={data.pricePerPerson}
+      data-item-url={`/nightlife/${slug}`}
+      data-item-maps={data.googleMapsUrl}
+      class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm flex items-center justify-center text-stone-400 hover:text-rose-500 shadow-sm transition-all hover:scale-110 active:scale-95 cursor-pointer z-10"
+      title="บันทึกร้านนี้"
+      aria-label="บันทึกร้านนี้"
+    >
+      <svg class="w-4 h-4 fill-current transition-colors" viewBox="0 0 24 24">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+    </button>
+
+    <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+      <div data-open-badge class="hidden text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-sm"></div>
+      <div class="ml-auto bg-stone-900/80 backdrop-blur-sm text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+        ⭐ <span>{avgRating} ({data.studentReviews.length} รีวิว)</span>
+      </div>
     </div>
-  </a>
+  </div>
 
   <div class="p-5 flex flex-col flex-grow">
-    <div class="flex items-center gap-2 text-xs text-stone-500 mb-2 font-medium">
+    <div class="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400 mb-2 font-medium">
       <span>📍 {data.zone}</span>
       <span>•</span>
       <span>⏰ {data.openHours.split('(')[0].trim()}</span>
     </div>
 
-    <h3 class="font-bold text-stone-900 text-lg leading-snug mb-2 group-hover:text-purple-600 transition-colors line-clamp-1">
+    <h3 class="font-bold text-stone-900 dark:text-white text-lg leading-snug mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-1">
       <a href={`/nightlife/${slug}`}>
         {data.title}
       </a>
     </h3>
 
     <!-- Highlight Promotion badge -->
-    <div class="bg-purple-50 text-purple-700 text-xs font-medium px-3 py-2 rounded-xl mb-3 border border-purple-100 flex items-center gap-1.5">
+    <div class="bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-medium px-3 py-2 rounded-xl mb-3 border border-purple-100 dark:border-purple-900/60 flex items-center gap-1.5">
       <span>🎉</span>
       <span class="truncate">{data.highlightPromo}</span>
     </div>
 
-    <div class="flex justify-between items-center text-xs text-stone-600 mb-3">
+    <div class="flex justify-between items-center text-xs text-stone-600 dark:text-stone-400 mb-3">
       <span>งบประมาณเฉลี่ย:</span>
-      <span class="font-bold text-stone-900">{data.pricePerPerson} / คน</span>
+      <span class="font-bold text-stone-900 dark:text-white">{data.pricePerPerson} / คน</span>
     </div>
 
     <!-- Latest Student Review -->
     {data.studentReviews[0] && (
-      <div class="mt-auto pt-3 border-t border-stone-100 text-xs text-stone-500 italic bg-purple-50/30 p-2.5 rounded-lg border border-purple-100/50">
-        <span class="font-semibold text-stone-700 not-italic">💬 {data.studentReviews[0].author}:</span>
-        <p class="line-clamp-2 mt-0.5 text-stone-600">"{data.studentReviews[0].comment}"</p>
+      <div class="mt-auto pt-3 border-t border-stone-100 dark:border-stone-800 text-xs text-stone-500 dark:text-stone-400 italic bg-purple-50/30 dark:bg-stone-800/40 p-2.5 rounded-xl border border-purple-100/50 dark:border-stone-700">
+        <span class="font-semibold text-stone-700 dark:text-stone-300 not-italic">💬 {data.studentReviews[0].author}:</span>
+        <p class="line-clamp-2 mt-0.5 text-stone-600 dark:text-stone-400">"{data.studentReviews[0].comment}"</p>
       </div>
     )}
   </div>

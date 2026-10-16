@@ -1,4 +1,10 @@
 ---
+import RandomWheelModal from '../components/RandomWheelModal.astro';
+import SosModal from '../components/SosModal.astro';
+import FavoritesDrawer from '../components/FavoritesDrawer.astro';
+import FloatingActionHub from '../components/FloatingActionHub.astro';
+import MobileBottomNav from '../components/MobileBottomNav.astro';
+
 interface Props {
   title: string;
   description?: string;
@@ -10,7 +16,7 @@ interface Props {
 
 const {
   title,
-  description = "รวมรีวิวร้านอาหาร ของกินอ่าวอุดม ม.เกษตร ศรีราชา ร้านเด็ดรอบรั้วมหาวิทยาลัยและร้านปิดดึกสำหรับเด็กหอ",
+  description = "รวมรีวิวร้านอาหาร ของกินอ่าวอุดม ม.เกษตร ศรีราชา หอพัก คอนโด ร้านนั่งชิล และบริการซ่อมมอเตอร์ไซค์ 24 ชม.",
   image = "/images/og-default.jpg",
   article = false,
   schema,
@@ -29,6 +35,18 @@ const pageTitle = exactTitle ? title : `${title} | ${siteName}`;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
+
+    <!-- Dark Mode Init Script (Prevents theme flicker) -->
+    <script is:inline>
+      (function() {
+        const saved = localStorage.getItem('ku_theme');
+        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
     
     <!-- Primary Meta Tags -->
     <title>{pageTitle}</title>
@@ -59,7 +77,7 @@ const pageTitle = exactTitle ? title : `${title} | ${siteName}`;
     <!-- Google Font Prompt -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style is:global>
       body {
@@ -67,33 +85,99 @@ const pageTitle = exactTitle ? title : `${title} | ${siteName}`;
       }
     </style>
   </head>
-  <body class="bg-[#fafaf9] text-stone-800 flex flex-col min-h-screen antialiased selection:bg-brand-500 selection:text-white">
+  <body class="bg-[#fafaf9] dark:bg-stone-950 text-stone-800 dark:text-stone-100 flex flex-col min-h-screen antialiased selection:bg-brand-500 selection:text-white transition-colors duration-200 pb-16 sm:pb-0">
     <!-- Header -->
-    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-stone-200">
-      <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-2 group">
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-stone-900/90 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 transition-colors">
+      <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-2 group flex-shrink-0">
           <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-orange-400 flex items-center justify-center text-white font-bold text-xl shadow-sm group-hover:scale-105 transition-transform">
             🍽️
           </span>
           <div class="flex flex-col">
-            <span class="font-bold text-lg text-stone-900 leading-tight tracking-tight">อ่าวอุดม<span class="text-brand-500">Food</span></span>
-            <span class="text-[11px] text-stone-500 tracking-wider">KU SRIRACHA FOOD GUIDE</span>
+            <span class="font-bold text-lg text-stone-900 dark:text-white leading-tight tracking-tight">อ่าวอุดม<span class="text-brand-500">Food</span></span>
+            <span class="text-[10px] text-stone-500 dark:text-stone-400 tracking-wider">KU SRIRACHA LIFE OS</span>
           </div>
         </a>
 
-        <!-- Navigation Links -->
-        <nav class="hidden md:flex items-center gap-5 text-sm font-medium text-stone-600">
-          <a href="/" class="hover:text-brand-600 transition-colors">หน้าแรก</a>
-          <a href="/dorms" class="hover:text-blue-600 transition-colors flex items-center gap-1">🏢 หอพัก/คอนโด</a>
-          <a href="/nightlife" class="hover:text-purple-600 transition-colors flex items-center gap-1">🍻 ร้านเหล้า</a>
-          <a href="/motorbikes" class="hover:text-red-600 transition-colors flex items-center gap-1">🛵 ซ่อมมอไซค์</a>
-          <a href="/categories" class="hover:text-brand-600 transition-colors">ร้านอาหารทั้งหมด</a>
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-stone-600 dark:text-stone-300">
+          <a href="/" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">หน้าแรก</a>
+          <button
+            type="button"
+            data-open-wheel
+            class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors flex items-center gap-1 cursor-pointer"
+          >
+            🎲 สุ่มของกิน
+          </button>
+          <a href="/map" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center gap-1">
+            🗺️ แผนที่พิกัด
+          </a>
+          <a href="/calculator" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1">
+            ⚡ คำนวณหอ
+          </a>
+          <a href="/dorms" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            🏢 หอพัก/คอนโด
+          </a>
+          <a href="/nightlife" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+            🍻 ร้านเหล้า
+          </a>
+          <a href="/ai-mind" class="hover:text-pink-600 dark:hover:text-pink-400 transition-colors font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 flex items-center gap-1">
+            🎨 ศิลปะ AI
+          </a>
+          <a href="/emergency" class="hover:text-red-600 dark:hover:text-red-400 transition-colors">
+            🚨 ฉุกเฉิน 24 ชม.
+          </a>
         </nav>
 
-        <div class="flex items-center gap-2">
-          <a href="/motorbikes" class="text-xs md:text-sm font-semibold bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1">
-            🛵 ซ่อมรถด่วน
-          </a>
+        <!-- Header Right Actions -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <!-- Quick Wheel Button (Visible on desktop & tablet) -->
+          <button
+            type="button"
+            data-open-wheel
+            class="hidden md:inline-flex items-center gap-1.5 text-xs font-bold bg-gradient-to-r from-brand-600 to-amber-500 hover:from-brand-700 hover:to-amber-600 text-white px-3 py-1.5 rounded-xl shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            title="สุ่มมื้อนี้ให้ฉันหน่อย"
+          >
+            <span>🎲</span>
+            <span>สุ่มของกิน</span>
+          </button>
+
+          <!-- Favorites Button with Counter Badge -->
+          <button
+            type="button"
+            data-open-favorites
+            class="relative w-9 h-9 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-stone-600 dark:text-stone-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer"
+            title="รายการโปรดของฉัน"
+            aria-label="รายการโปรดของฉัน"
+          >
+            <span class="text-base">❤️</span>
+            <span
+              data-fav-count-badge
+              class="hidden absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-extrabold flex items-center justify-center shadow-xs"
+            ></span>
+          </button>
+
+          <!-- Dark Mode Switch -->
+          <button
+            type="button"
+            onclick="window.toggleDarkMode()"
+            class="w-9 h-9 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 flex items-center justify-center transition-colors cursor-pointer"
+            title="สลับโหมดมืด/สว่าง"
+            aria-label="สลับโหมดมืด/สว่าง"
+          >
+            <span id="nav-theme-icon" class="text-base">🌙</span>
+          </button>
+
+          <!-- Quick SOS button -->
+          <button
+            type="button"
+            data-open-sos
+            class="text-xs font-bold bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-900/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/60 px-2.5 sm:px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
+          >
+            <span class="animate-pulse">🚨</span>
+            <span class="hidden sm:inline">SOS</span> 24 ชม.
+          </button>
         </div>
       </div>
     </header>
@@ -104,55 +188,64 @@ const pageTitle = exactTitle ? title : `${title} | ${siteName}`;
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-stone-200 py-12 mt-16 text-stone-600 text-sm">
+    <footer class="bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 py-12 mt-16 text-stone-600 dark:text-stone-400 text-sm transition-colors">
       <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
         <div class="md:col-span-1">
           <div class="flex items-center gap-2 mb-2">
             <span class="w-7 h-7 rounded-lg bg-brand-500 text-white flex items-center justify-center font-bold text-sm">KU</span>
-            <span class="font-bold text-base text-stone-900">SRC News <span class="text-brand-500">Guide</span></span>
+            <span class="font-bold text-base text-stone-900 dark:text-white">SRC News <span class="text-brand-500">Life OS</span></span>
           </div>
-          <p class="text-xs text-stone-500 leading-relaxed">
-            คู่มือรวมข้อมูลร้านอาหาร หอพัก คอนโดมิเนียม ร้านนั่งชิล และบริการซ่อมมอเตอร์ไซค์ 24 ชม. รอบ ม.เกษตรศาสตร์ ศรีราชา และอ่าวอุดม
+          <p class="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+            สุดยอดคู่มือและเครื่องมือดิจิทัลสำหรับนิสิต ม.เกษตรศาสตร์ ศรีราชา และชาวอ่าวอุดม รวบรวมร้านอาหาร แผนที่พิกัด หอพัก เครื่องคำนวณค่าไฟ และบริการฉุกเฉิน 24 ชม.
           </p>
         </div>
 
         <div>
-          <h4 class="font-bold text-xs uppercase text-stone-900 tracking-wider mb-3">หมวดหมู่หลัก</h4>
-          <ul class="space-y-2 text-xs text-stone-500">
-            <li><a href="/categories" class="hover:text-brand-600 transition-colors">🍜 ร้านอาหาร & คาเฟ่</a></li>
-            <li><a href="/dorms" class="hover:text-blue-600 transition-colors">🏢 หอพัก & คอนโดมิเนียม</a></li>
-            <li><a href="/nightlife" class="hover:text-purple-600 transition-colors">🍻 ร้านเหล้า & นั่งชิล</a></li>
-            <li><a href="/motorbikes" class="hover:text-red-600 transition-colors">🛵 ซ่อมมอเตอร์ไซค์ & ปะยาง</a></li>
+          <h4 class="font-bold text-xs uppercase text-stone-900 dark:text-white tracking-wider mb-3">ฟังก์ชันยอดฮิต</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="/random" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors flex items-center gap-1">🎲 วงล้อสุ่มของกินมื้อนี้</a></li>
+            <li><a href="/map" class="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center gap-1">🗺️ แผนที่พิกัดรอบ ม.เกษตร</a></li>
+            <li><a href="/calculator" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1">⚡ เครื่องคำนวณค่าไฟ & เทียบหอ</a></li>
+            <li><a href="/emergency" class="hover:text-red-600 dark:hover:text-red-400 transition-colors flex items-center gap-1">🚨 สายด่วนปะยาง & ฉุกเฉิน 24 ชม.</a></li>
           </ul>
         </div>
 
         <div>
-          <h4 class="font-bold text-xs uppercase text-stone-900 tracking-wider mb-3">จุดยอดนิยม</h4>
-          <ul class="space-y-2 text-xs text-stone-500">
-            <li><a href="/category/ประตู 3" class="hover:text-brand-600 transition-colors">📍 โซนประตู 3 ม.เกษตร</a></li>
-            <li><a href="/category/ร้านปิดดึก" class="hover:text-brand-600 transition-colors">🌙 ร้านเปิดดึก คลั่งหิวมื้อดึก</a></li>
-            <li><a href="/category/งบประหยัด" class="hover:text-brand-600 transition-colors">💰 ร้านอาหารงบประหยัด</a></li>
-            <li><a href="/category/ซีฟู้ด-ริมทะเล" class="hover:text-brand-600 transition-colors">🦀 ซีฟู้ดก้นอ่าวอุดม</a></li>
+          <h4 class="font-bold text-xs uppercase text-stone-900 dark:text-white tracking-wider mb-3">หมวดหมู่หลัก</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="/categories" class="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">🍜 ร้านอาหาร & คาเฟ่ทั้งหมด</a></li>
+            <li><a href="/dorms" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">🏢 หอพัก & คอนโดมิเนียม</a></li>
+            <li><a href="/nightlife" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">🍻 ร้านเหล้า & นั่งชิล</a></li>
+            <li><a href="/motorbikes" class="hover:text-red-600 dark:hover:text-red-400 transition-colors">🛵 ร้านซ่อมมอไซค์ & ปะยาง</a></li>
           </ul>
         </div>
 
         <div>
-          <h4 class="font-bold text-xs uppercase text-stone-900 tracking-wider mb-3">เบอร์ฉุกเฉินเด็กหอ</h4>
-          <div class="bg-red-50 p-3 rounded-xl border border-red-100 text-xs">
-            <span class="text-red-700 font-bold block mb-1">🚨 ปะยางฉุกเฉิน 24 ชม.</span>
-            <a href="tel:0933242443" class="font-extrabold text-red-600 block hover:underline">093-324-2443</a>
-            <span class="text-[11px] text-stone-400 mt-1 block">ช่างโจ้ ศรีราชา-อ่าวอุดม</span>
+          <h4 class="font-bold text-xs uppercase text-stone-900 dark:text-white tracking-wider mb-3">เบอร์ฉุกเฉินคู่ใจเด็กหอ</h4>
+          <div class="bg-red-50 dark:bg-red-950/40 p-3 rounded-2xl border border-red-200 dark:border-red-900/60 text-xs">
+            <span class="text-red-700 dark:text-red-300 font-bold block mb-1">🚨 ปะยางฉุกเฉิน 24 ชม.</span>
+            <a href="tel:0933242443" class="font-extrabold text-red-600 dark:text-red-400 block hover:underline text-sm">093-324-2443</a>
+            <span class="text-[11px] text-stone-400 mt-1 block">ช่างโจ้ ศรีราชา-อ่าวอุดม ถึงที่ใน 20 นาที</span>
           </div>
         </div>
       </div>
 
-      <div class="max-w-6xl mx-auto px-4 pt-6 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-400">
-        <p>&copy; {new Date().getFullYear()} SRC News - อ่าวอุดม ม.เกษตร ศรีราชา Guide. ข้อมูลสถานที่จริง</p>
+      <div class="max-w-6xl mx-auto px-4 pt-6 border-t border-stone-100 dark:border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-400">
+        <p>&copy; {new Date().getFullYear()} SRC News - อ่าวอุดม ม.เกษตร ศรีราชา Life Guide. ข้อมูลสถานที่จริง</p>
         <div class="flex gap-4">
-          <a href="/sitemap-index.xml" class="hover:text-stone-600">Sitemap</a>
-          <a href="/robots.txt" class="hover:text-stone-600">Robots.txt</a>
+          <a href="/map" class="hover:text-stone-600 dark:hover:text-stone-300">แผนที่</a>
+          <a href="/random" class="hover:text-stone-600 dark:hover:text-stone-300">สุ่มของกิน</a>
+          <a href="/calculator" class="hover:text-stone-600 dark:hover:text-stone-300">คำนวณหอ</a>
+          <a href="/emergency" class="hover:text-stone-600 dark:hover:text-stone-300">เบอร์ฉุกเฉิน</a>
         </div>
       </div>
     </footer>
+
+    <!-- Interactive Global Components -->
+    <RandomWheelModal />
+    <SosModal />
+    <FavoritesDrawer />
+    <FloatingActionHub />
+    <MobileBottomNav />
   </body>
 </html>

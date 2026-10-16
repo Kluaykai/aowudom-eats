@@ -1,0 +1,27 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import DormCalculator from '../components/DormCalculator.astro';
+---
+
+<MainLayout
+  title="คำนวณค่าไฟ & เปรียบเทียบหอพัก ม.เกษตร ศรีราชา | เช็คค่าครองชีพเด็กหอ"
+  description="เครื่องมือคำนวณค่าไฟและค่าใช้จ่ายหอพักรายเดือน เปรียบเทียบหอนอก vs คอนโดไฟหลวง ม.เกษตร ศรีราชา และย่านอ่าวอุดม เห็นตัวเลขสุทธิก่อนตัดสินใจเช่า"
+>
+  <div class="max-w-5xl mx-auto px-4 py-8 md:py-12">
+    <!-- Header -->
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-stone-800 text-blue-600 dark:text-blue-400 text-xs font-bold mb-3 shadow-xs">
+        <span>⚡ ตัวช่วยเด็กหอ KU Sriracha</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-extrabold text-stone-900 dark:text-white tracking-tight">
+        คำนวณค่าไฟ & <span class="text-blue-600">เปรียบเทียบหอพัก</span>
+      </h1>
+      <p class="mt-3 text-stone-600 dark:text-stone-300 text-sm md:text-base">
+        หอถูกแต่อาจจะจ่ายแพงเพราะค่าไฟหน่วยละ 8 บาท! คำนวณค่าใช้จ่ายจริงรายเดือน และเทียบสเปกหอพักรอบ ม.เกษตร ศรีราชา แบบหมัดต่อหมัด
+      </p>
+    </div>
+
+    <!-- The Calculator & Matrix Component -->
+    <DormCalculator />
+  </div>
+</MainLayout>

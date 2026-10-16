@@ -1,0 +1,547 @@
+---
+// RandomWheelModal.astro - วงล้อสุ่มของกินเด็กหอ ม.เกษตร ศรีราชา & เครื่องช่วยตัดสินใจ
+import { allLocations } from '../data/locationsData';
+
+const foodAndBars = allLocations.filter((item) => item.type === 'food' || item.type === 'nightlife');
+---
+
+<div
+  id="random-wheel-modal"
+  class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/70 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="wheel-title"
+>
+  <div
+    class="relative w-full max-w-lg bg-white dark:bg-stone-900 rounded-3xl shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden transform scale-95 transition-transform duration-300 max-h-[92vh] flex flex-col"
+    id="wheel-modal-container"
+  >
+    <!-- Modal Header -->
+    <div class="px-5 py-4 border-b border-stone-100 dark:border-stone-800 flex items-center justify-between bg-stone-50/50 dark:bg-stone-800/40">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-amber-500 text-white flex items-center justify-center text-lg shadow-sm">
+          🎲
+        </span>
+        <div>
+          <h3 id="wheel-title" class="font-extrabold text-base sm:text-lg text-stone-900 dark:text-white leading-tight">
+            วงล้อสุ่มของกินเด็กหอ
+          </h3>
+          <p class="text-[11px] text-stone-500 dark:text-stone-400">
+            คิดไม่ออก...ให้วงล้อเลือกให้! รอบรั้ว ม.เกษตร ศรีราชา
+          </p>
+        </div>
+      </div>
+      <button
+        id="close-wheel-btn"
+        class="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer text-lg"
+        aria-label="ปิดหน้าต่าง"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Modal Body (Scrollable) -->
+    <div class="p-4 sm:p-5 overflow-y-auto flex-grow space-y-4">
+      <!-- Filter Chips -->
+      <div class="space-y-1.5">
+        <label class="text-[11px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
+          เลือกหมวดหมู่ที่อยากกิน:
+        </label>
+        <div class="flex flex-wrap gap-1.5" id="wheel-category-filters">
+          <button
+            type="button"
+            data-cat="all"
+            class="wheel-cat-btn active text-xs font-semibold px-3 py-1.5 rounded-full bg-brand-500 text-white shadow-xs transition-all"
+          >
+            ทั้งหมด ({foodAndBars.length})
+          </button>
+          <button
+            type="button"
+            data-cat="อาหารจานด่วน"
+            class="wheel-cat-btn text-xs font-medium px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 transition-all"
+          >
+            🍜 จานด่วน/งบประหยัด
+          </button>
+          <button
+            type="button"
+            data-cat="ร้านปิดดึก"
+            class="wheel-cat-btn text-xs font-medium px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 transition-all"
+          >
+            🌙 เปิดดึก (เด็กหอ)
+          </button>
+          <button
+            type="button"
+            data-cat="บุฟเฟต์-หมูกระทะ"
+            class="wheel-cat-btn text-xs font-medium px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 transition-all"
+          >
+            🥩 หมูกระทะ/ชาบู
+          </button>
+          <button
+            type="button"
+            data-cat="คาเฟ่"
+            class="wheel-cat-btn text-xs font-medium px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 transition-all"
+          >
+            ☕ คาเฟ่/ของหวาน
+          </button>
+          <button
+            type="button"
+            data-cat="ซีฟู้ด-ริมทะเล"
+            class="wheel-cat-btn text-xs font-medium px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 transition-all"
+          >
+            🦀 ซีฟู้ดริมทะเล
+          </button>
+          <button
+            type="button"
+            data-cat="nightlife"
+            class="wheel-cat-btn text-xs font-medium px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 transition-all"
+          >
+            🍻 ร้านนั่งชิล/เหล้า
+          </button>
+        </div>
+      </div>
+
+      <!-- Canvas Wheel Container -->
+      <div class="relative flex flex-col items-center justify-center py-2">
+        <!-- Pointer Arrow -->
+        <div class="absolute -top-1 z-20 text-brand-600 filter drop-shadow-md transform -translate-y-1">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 21L4.5 7.5h15L12 21z" />
+          </svg>
+        </div>
+
+        <!-- Wheel Canvas -->
+        <div class="relative w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] rounded-full p-2 bg-gradient-to-tr from-stone-200 to-stone-100 dark:from-stone-800 dark:to-stone-700 shadow-xl flex items-center justify-center">
+          <canvas id="wheel-canvas" width="300" height="300" class="w-full h-full rounded-full cursor-pointer"></canvas>
+          <!-- Center Button -->
+          <button
+            id="spin-center-btn"
+            class="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-stone-900 dark:bg-white text-white dark:text-stone-900 font-extrabold text-xs sm:text-sm flex flex-col items-center justify-center shadow-lg border-4 border-white dark:border-stone-900 hover:scale-105 active:scale-95 transition-all cursor-pointer z-10"
+          >
+            <span>หมุน!</span>
+            <span class="text-[9px] font-normal opacity-80">SPIN</span>
+          </button>
+        </div>
+
+        <!-- Confetti Canvas (Overlay) -->
+        <canvas id="confetti-canvas" class="absolute inset-0 pointer-events-none w-full h-full z-30"></canvas>
+      </div>
+
+      <!-- Action Buttons under Wheel -->
+      <div class="flex items-center justify-center gap-2 pt-1">
+        <button
+          id="spin-btn"
+          type="button"
+          class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-orange-500 hover:from-brand-700 hover:to-orange-600 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>🎯</span> หมุนวงล้อเสี่ยงทาย
+        </button>
+        <button
+          id="instant-random-btn"
+          type="button"
+          class="py-3 px-3.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 font-bold text-xs transition-all flex items-center gap-1 cursor-pointer"
+          title="สุ่มทันทีโดยไม่หมุน"
+        >
+          ⚡ สุ่มด่วน
+        </button>
+      </div>
+
+      <!-- Result Card (Hidden until spin finishes) -->
+      <div
+        id="wheel-result-card"
+        class="hidden bg-gradient-to-br from-amber-50 to-orange-50 dark:from-stone-800/80 dark:to-stone-800/40 rounded-2xl p-4 border border-brand-200 dark:border-stone-700 shadow-sm animate-fade-in"
+      >
+        <div class="flex items-start gap-3">
+          <img
+            id="result-img"
+            src=""
+            alt=""
+            class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border border-stone-200 dark:border-stone-700 shadow-xs flex-shrink-0"
+          />
+          <div class="flex-grow min-w-0">
+            <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+              <span id="result-cat" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500 text-white"></span>
+              <span id="result-zone" class="text-[10px] text-stone-500 dark:text-stone-400 bg-white dark:bg-stone-700 px-1.5 py-0.5 rounded"></span>
+            </div>
+            <h4 id="result-title" class="font-extrabold text-stone-900 dark:text-white text-base leading-tight truncate"></h4>
+            <p id="result-desc" class="text-xs text-stone-600 dark:text-stone-300 mt-1 line-clamp-2"></p>
+            <div class="mt-2 flex items-center justify-between text-xs">
+              <span id="result-price" class="text-stone-500 dark:text-stone-400 font-semibold"></span>
+              <span id="result-hours" class="text-stone-500 dark:text-stone-400 text-[11px]"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-brand-100 dark:border-stone-700 flex items-center gap-2">
+          <a
+            id="result-maps-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex-1 text-center py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+          >
+            <span>🧭</span> นำทาง Google Maps
+          </a>
+          <a
+            id="result-detail-link"
+            href="#"
+            class="flex-1 text-center py-2 px-3 rounded-lg bg-white dark:bg-stone-700 hover:bg-stone-100 dark:hover:bg-stone-600 text-stone-800 dark:text-white border border-stone-200 dark:border-stone-600 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <span>📖</span> อ่านรีวิวเต็ม
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ foodAndBars }}>
+  window.foodAndBarsData = foodAndBars;
+
+  let currentCategory = 'all';
+  let filteredItems = [...window.foodAndBarsData];
+  let isSpinning = false;
+  let currentAngle = 0;
+  let spinTimeout = null;
+
+  const modal = document.getElementById('random-wheel-modal');
+  const modalContainer = document.getElementById('wheel-modal-container');
+  const closeBtn = document.getElementById('close-wheel-btn');
+  const canvas = document.getElementById('wheel-canvas');
+  const ctx = canvas ? canvas.getContext('2d') : null;
+  const spinBtn = document.getElementById('spin-btn');
+  const spinCenterBtn = document.getElementById('spin-center-btn');
+  const instantBtn = document.getElementById('instant-random-btn');
+  const resultCard = document.getElementById('wheel-result-card');
+  const categoryFilterBtns = document.querySelectorAll('.wheel-cat-btn');
+
+  // Palette of energetic food colors
+  const sliceColors = [
+    '#f97316', '#fb923c', '#ea580c', '#e11d48', '#f43f5e',
+    '#059669', '#10b981', '#0284c7', '#38bdf8', '#8b5cf6',
+    '#a855f7', '#d97706', '#f59e0b', '#ec4899', '#6366f1'
+  ];
+
+  // Sound Synthesizer via Web Audio API (Click tick sound)
+  let audioCtx = null;
+  function getAudioContext() {
+    if (!audioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) audioCtx = new AudioContextClass();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playTickSound() {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.04);
+    } catch (e) {
+      // Audio might be blocked on unmuted autoplay
+    }
+  }
+
+  function playWinSound() {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.09);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime + idx * 0.09);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.09 + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + idx * 0.09);
+        osc.stop(ctx.currentTime + idx * 0.09 + 0.35);
+      });
+    } catch (e) {}
+  }
+
+  // Draw the Wheel Canvas
+  function drawWheel() {
+    if (!ctx || !canvas) return;
+    const numSlices = filteredItems.length;
+    if (numSlices === 0) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = width / 2 - 4;
+    const sliceAngle = (2 * Math.PI) / numSlices;
+
+    ctx.clearRect(0, 0, width, height);
+
+    filteredItems.forEach((item, index) => {
+      const angle = currentAngle + index * sliceAngle;
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, angle, angle + sliceAngle);
+      ctx.closePath();
+
+      // Alternate color
+      ctx.fillStyle = sliceColors[index % sliceColors.length];
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+
+      // Draw item title text
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(angle + sliceAngle / 2);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = numSlices > 14 ? 'bold 10px Prompt, sans-serif' : 'bold 11px Prompt, sans-serif';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+      ctx.shadowBlur = 3;
+
+      let displayText = item.title || '';
+      if (displayText.length > 13) displayText = displayText.substring(0, 12) + '…';
+      ctx.fillText(displayText, radius - 15, 4);
+      ctx.restore();
+    });
+  }
+
+  // Confetti Particle System
+  function launchConfetti() {
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    if (!confettiCanvas) return;
+    const cCtx = confettiCanvas.getContext('2d');
+    if (!cCtx) return;
+
+    confettiCanvas.width = confettiCanvas.offsetWidth;
+    confettiCanvas.height = confettiCanvas.offsetHeight;
+
+    const particles = [];
+    const colors = ['#f97316', '#e11d48', '#10b981', '#3b82f6', '#facc15', '#a855f7'];
+
+    for (let i = 0; i < 70; i++) {
+      particles.push({
+        x: confettiCanvas.width / 2,
+        y: confettiCanvas.height / 2,
+        vx: (Math.random() - 0.5) * 12,
+        vy: (Math.random() - 0.7) * 14,
+        size: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        vr: (Math.random() - 0.5) * 10,
+        life: 1.0
+      });
+    }
+
+    let animId;
+    function renderConfetti() {
+      cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      let alive = false;
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35; // gravity
+        p.vx *= 0.98;
+        p.rotation += p.vr;
+        p.life -= 0.015;
+
+        if (p.life > 0) {
+          alive = true;
+          cCtx.save();
+          cCtx.translate(p.x, p.y);
+          cCtx.rotate((p.rotation * Math.PI) / 180);
+          cCtx.fillStyle = p.color;
+          cCtx.globalAlpha = Math.max(0, p.life);
+          cCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 1.5);
+          cCtx.restore();
+        }
+      });
+
+      if (alive) {
+        animId = requestAnimationFrame(renderConfetti);
+      } else {
+        cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        cancelAnimationFrame(animId);
+      }
+    }
+    renderConfetti();
+  }
+
+  // Display Result Details
+  function showResult(item) {
+    if (!resultCard || !item) return;
+
+    const img = document.getElementById('result-img');
+    const cat = document.getElementById('result-cat');
+    const zone = document.getElementById('result-zone');
+    const title = document.getElementById('result-title');
+    const desc = document.getElementById('result-desc');
+    const price = document.getElementById('result-price');
+    const hours = document.getElementById('result-hours');
+    const mapsLink = document.getElementById('result-maps-link');
+    const detailLink = document.getElementById('result-detail-link');
+
+    if (img) img.src = item.coverImage;
+    if (cat) cat.textContent = item.category;
+    if (zone) zone.textContent = '📍 ' + (item.zone || 'อ่าวอุดม');
+    if (title) title.textContent = item.title;
+    if (desc) desc.textContent = item.description || 'ร้านเด็ดรอบรั้ว ม.เกษตร ศรีราชา';
+    if (price) price.textContent = '💵 ' + (item.price || 'งบประหยัด');
+    if (hours) hours.textContent = '⏰ ' + (item.openHours ? item.openHours.split('(')[0] : 'เปิดทุกวัน');
+    if (mapsLink) mapsLink.href = item.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}`;
+    if (detailLink) detailLink.href = item.url || '#';
+
+    resultCard.classList.remove('hidden');
+    resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    playWinSound();
+    launchConfetti();
+  }
+
+  // Spin Physics
+  function spin() {
+    if (isSpinning || filteredItems.length === 0) return;
+    isSpinning = true;
+    if (resultCard) resultCard.classList.add('hidden');
+
+    const spinDuration = 3500; // ms
+    const startTime = performance.now();
+    const startAngle = currentAngle;
+
+    // Pick random target index
+    const winningIndex = Math.floor(Math.random() * filteredItems.length);
+    const sliceAngle = (2 * Math.PI) / filteredItems.length;
+
+    // Pointer is at TOP: 3 * Math.PI / 2 (or -Math.PI / 2)
+    // To have slice `winningIndex` land under top pointer:
+    // angle + winningIndex * sliceAngle + sliceAngle / 2 = 3 * Math.PI / 2 (mod 2PI)
+    const targetSliceAngle = (3 * Math.PI) / 2 - (winningIndex * sliceAngle + sliceAngle / 2);
+    const fullRotations = (5 + Math.floor(Math.random() * 4)) * (2 * Math.PI);
+    const totalAngleToRotate = fullRotations + ((targetSliceAngle - (startAngle % (2 * Math.PI)) + 4 * Math.PI) % (2 * Math.PI));
+
+    let lastTickAngle = startAngle;
+
+    function animate(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / spinDuration, 1);
+
+      // Ease Out Cubic
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      currentAngle = startAngle + totalAngleToRotate * easeOut;
+
+      // Tick audio when crossing slices
+      if (Math.abs(currentAngle - lastTickAngle) > sliceAngle * 0.9) {
+        playTickSound();
+        lastTickAngle = currentAngle;
+      }
+
+      drawWheel();
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        isSpinning = false;
+        showResult(filteredItems[winningIndex]);
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  // Instant Pick
+  function instantPick() {
+    if (filteredItems.length === 0) return;
+    const winningIndex = Math.floor(Math.random() * filteredItems.length);
+    showResult(filteredItems[winningIndex]);
+  }
+
+  // Apply Filter
+  function setCategory(cat) {
+    currentCategory = cat;
+    categoryFilterBtns.forEach((btn) => {
+      if (btn.dataset.cat === cat) {
+        btn.className = 'wheel-cat-btn active text-xs font-semibold px-3 py-1.5 rounded-full bg-brand-500 text-white shadow-xs transition-all';
+      } else {
+        btn.className = 'wheel-cat-btn text-xs font-medium px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 transition-all';
+      }
+    });
+
+    if (cat === 'all') {
+      filteredItems = [...window.foodAndBarsData];
+    } else if (cat === 'nightlife') {
+      filteredItems = window.foodAndBarsData.filter((i) => i.type === 'nightlife');
+    } else if (cat === 'อาหารจานด่วน') {
+      filteredItems = window.foodAndBarsData.filter((i) => i.category === 'อาหารจานด่วน' || i.category === 'งบประหยัด');
+    } else {
+      filteredItems = window.foodAndBarsData.filter((i) => i.category.includes(cat));
+    }
+
+    if (resultCard) resultCard.classList.add('hidden');
+    drawWheel();
+  }
+
+  // Global open function
+  window.openRandomWheel = function (preselectCat) {
+    if (preselectCat) {
+      setCategory(preselectCat);
+    } else {
+      setCategory('all');
+    }
+    if (modal && modalContainer) {
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modalContainer.classList.remove('scale-95');
+      modalContainer.classList.add('scale-100');
+      drawWheel();
+    }
+  };
+
+  window.closeRandomWheel = function () {
+    if (modal && modalContainer) {
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modalContainer.classList.remove('scale-100');
+      modalContainer.classList.add('scale-95');
+    }
+  };
+
+  // Event Listeners
+  if (closeBtn) closeBtn.addEventListener('click', window.closeRandomWheel);
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) window.closeRandomWheel();
+    });
+  }
+  if (spinBtn) spinBtn.addEventListener('click', spin);
+  if (spinCenterBtn) spinCenterBtn.addEventListener('click', spin);
+  if (instantBtn) instantBtn.addEventListener('click', instantPick);
+
+  categoryFilterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      setCategory(btn.dataset.cat || 'all');
+    });
+  });
+
+  // Support clicking triggers across the website
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('[data-open-wheel]');
+    if (trigger) {
+      const cat = trigger.getAttribute('data-wheel-cat') || 'all';
+      window.openRandomWheel(cat);
+    }
+  });
+
+  // Initial draw
+  drawWheel();
+</script>

@@ -1,0 +1,132 @@
+---
+// FloatingActionHub.astro - Floating Action Hub (FAB) with Quick Shortcuts
+---
+
+<div class="fixed bottom-6 right-5 z-40 hidden sm:flex flex-col items-end gap-2.5" id="fab-container">
+  <!-- Expanded Menu items -->
+  <div id="fab-menu" class="flex flex-col items-end gap-2.5 opacity-0 pointer-events-none transform translate-y-3 transition-all duration-300">
+    <!-- Dark Mode Toggle Button -->
+    <button
+      id="fab-theme-toggle"
+      type="button"
+      class="group flex items-center gap-2 px-3 py-2 rounded-2xl bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-stone-700 shadow-md hover:scale-105 active:scale-95 transition-all text-xs font-bold cursor-pointer"
+      title="สลับโหมดมืด / สว่าง"
+    >
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-[11px] text-stone-500 dark:text-stone-400">
+        โหมดมืด/สว่าง
+      </span>
+      <span class="text-base" id="fab-theme-icon">🌙</span>
+    </button>
+
+    <!-- Favorites Drawer Trigger -->
+    <button
+      type="button"
+      data-open-favorites
+      class="group flex items-center gap-2 px-3 py-2 rounded-2xl bg-white dark:bg-stone-800 text-rose-500 border border-stone-200 dark:border-stone-700 shadow-md hover:scale-105 active:scale-95 transition-all text-xs font-bold relative cursor-pointer"
+      title="เปิดรายการโปรด"
+    >
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-[11px] text-stone-500 dark:text-stone-400">
+        รายการโปรด
+      </span>
+      <span class="text-base">❤️</span>
+      <span
+        data-fav-count-badge
+        class="hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-extrabold flex items-center justify-center shadow-xs"
+      ></span>
+    </button>
+
+    <!-- SOS Emergency Trigger -->
+    <button
+      type="button"
+      data-open-sos
+      class="group flex items-center gap-2 px-3 py-2 rounded-2xl bg-red-600 text-white shadow-md hover:scale-105 active:scale-95 transition-all text-xs font-bold cursor-pointer"
+      title="เบอร์ฉุกเฉินเด็กหอ 24 ชม."
+    >
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-[11px] text-red-100">
+        เบอร์ฉุกเฉิน 24 ชม.
+      </span>
+      <span class="text-base animate-pulse">🚨</span>
+    </button>
+
+    <!-- AI Mind & Art Trigger -->
+    <a
+      href="/ai-mind"
+      class="group flex items-center gap-2 px-3 py-2 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md hover:scale-105 active:scale-95 transition-all text-xs font-bold"
+      title="ห้วงความคิดและงานศิลปะ AI"
+    >
+      <span class="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-[11px] text-purple-100">
+        ศิลปะ AI สด
+      </span>
+      <span class="text-base">🎨</span>
+    </a>
+
+    <!-- Food Wheel Trigger -->
+    <button
+      type="button"
+      data-open-wheel
+      class="group flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-600 to-amber-500 text-white shadow-lg hover:scale-105 active:scale-95 transition-all text-xs font-bold cursor-pointer"
+      title="วงล้อสุ่มของกิน"
+    >
+      <span class="whitespace-nowrap text-xs font-extrabold">
+        สุ่มของกิน 🎲
+      </span>
+    </button>
+  </div>
+
+  <!-- Main Floating Action Toggle Button -->
+  <button
+    id="fab-main-btn"
+    type="button"
+    class="w-13 h-13 rounded-2xl bg-stone-900 dark:bg-brand-500 text-white flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-white dark:border-stone-800"
+    aria-label="เปิดเมนูด่วน"
+  >
+    <span id="fab-main-icon" class="text-xl transition-transform duration-300">⚡</span>
+  </button>
+</div>
+
+<script is:inline>
+  const fabBtn = document.getElementById('fab-main-btn');
+  const fabMenu = document.getElementById('fab-menu');
+  const fabIcon = document.getElementById('fab-main-icon');
+  let fabOpen = false;
+
+  if (fabBtn && fabMenu) {
+    fabBtn.addEventListener('click', () => {
+      fabOpen = !fabOpen;
+      if (fabOpen) {
+        fabMenu.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
+        if (fabIcon) fabIcon.textContent = '✕';
+      } else {
+        fabMenu.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
+        if (fabIcon) fabIcon.textContent = '⚡';
+      }
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (fabOpen && !e.target.closest('#fab-container')) {
+        fabOpen = false;
+        fabMenu.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
+        if (fabIcon) fabIcon.textContent = '⚡';
+      }
+    });
+  }
+
+  // Dark Mode Toggle Logic
+  function updateThemeUI(isDark) {
+    const fabThemeIcon = document.getElementById('fab-theme-icon');
+    const navThemeIcon = document.getElementById('nav-theme-icon');
+    if (fabThemeIcon) fabThemeIcon.textContent = isDark ? '☀️' : '🌙';
+    if (navThemeIcon) navThemeIcon.textContent = isDark ? '☀️' : '🌙';
+  }
+
+  window.toggleDarkMode = function () {
+    const isDark = document.documentElement.classList.toggle('dark');
+    try {
+      localStorage.setItem('ku_theme', isDark ? 'dark' : 'light');
+    } catch (e) {}
+    updateThemeUI(isDark);
+  };
+
+  document.getElementById('fab-theme-toggle')?.addEventListener('click', window.toggleDarkMode);
+</script>

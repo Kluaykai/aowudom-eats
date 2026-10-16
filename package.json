@@ -7,7 +7,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "ai:evolve": "node scripts/ai_autonomous_updater.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

@@ -1,0 +1,459 @@
+---
+// DormCalculator.astro - เครื่องคำนวณค่าไฟ-ค่าครองชีพเด็กหอ & ตัวช่วยเปรียบเทียบหอพัก ม.เกษตร ศรีราชา
+import { allLocations } from '../data/locationsData';
+
+const dorms = allLocations.filter((item) => item.type === 'dorm');
+---
+
+<div class="space-y-10" id="dorm-tools-wrapper">
+  <!-- TOOL 1: Living Cost & Electricity Simulator -->
+  <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-6 md:p-8 shadow-lg">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-stone-800 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl shadow-xs">
+        ⚡
+      </span>
+      <div>
+        <h3 class="text-xl md:text-2xl font-extrabold text-stone-900 dark:text-white">
+          จำลองคำนวณค่าไฟ & ค่าใช้จ่ายหอพักรายเดือน
+        </h3>
+        <p class="text-xs text-stone-500 dark:text-stone-400">
+          เทียบค่าห้องจริง + ค่าไฟ (ไฟหลวง vs ไฟหอ) + ค่าน้ำ + ค่าเดินทาง เห็นตัวเลขจริงก่อนเซ็นสัญญา
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Input Controls (7 cols) -->
+      <div class="lg:col-span-7 space-y-5">
+        <!-- Preset Dorm Selector -->
+        <div>
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1.5">
+            เลือกหอพัก/คอนโดตัวอย่าง <span class="text-stone-400 font-normal">(เพื่อดึงค่าห้องและอัตราค่าไฟอัตโนมัติ)</span>:
+          </label>
+          <select
+            id="calc-dorm-preset"
+            class="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm text-stone-900 dark:text-white font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          >
+            <option value="custom">-- กรอกข้อมูลเอง / หอนอกอื่นๆ --</option>
+            {dorms.map((d) => (
+              <option
+                value={d.id}
+                data-price={d.price}
+                data-elec={d.electricityRate}
+                data-water={d.waterRate}
+                data-zone={d.zone}
+              >
+                {d.title} ({d.zone})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Rent Price -->
+          <div>
+            <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
+              ค่าเช่าห้องต่อเดือน (บาท):
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                id="calc-rent"
+                value="4500"
+                min="1000"
+                max="30000"
+                step="100"
+                class="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl pl-3.5 pr-12 py-2.5 text-sm font-bold text-stone-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              />
+              <span class="absolute right-3.5 top-2.5 text-xs text-stone-400">บ./ด.</span>
+            </div>
+          </div>
+
+          <!-- Electricity Rate -->
+          <div>
+            <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
+              อัตราค่าไฟฟ้า (บาท/หน่วย):
+            </label>
+            <div class="relative">
+              <input
+                type="number"
+                id="calc-elec-rate"
+                value="8.0"
+                min="3"
+                max="15"
+                step="0.5"
+                class="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl pl-3.5 pr-14 py-2.5 text-sm font-bold text-stone-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              />
+              <span class="absolute right-3.5 top-2.5 text-xs text-stone-400">บ./หน่วย</span>
+            </div>
+            <div class="flex gap-2 mt-1.5">
+              <button
+                type="button"
+                id="preset-gov-rate"
+                class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 hover:opacity-80 transition-opacity"
+              >
+                ⚡ ไฟหลวง (~4.5 บ.)
+              </button>
+              <button
+                type="button"
+                id="preset-dorm-rate"
+                class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300 hover:opacity-80 transition-opacity"
+              >
+                🏢 ไฟหอทั่วไป (8.0 บ.)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- AC Hours Slider -->
+        <div class="bg-stone-50 dark:bg-stone-800/60 rounded-2xl p-4 border border-stone-200 dark:border-stone-700">
+          <div class="flex justify-between items-center mb-2">
+            <label class="text-xs font-bold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
+              <span>❄️</span> เปิดแอร์วันละกี่ชั่วโมง?
+            </label>
+            <span id="ac-hours-display" class="font-extrabold text-blue-600 dark:text-blue-400 text-sm">
+              8 ชั่วโมง / วัน
+            </span>
+          </div>
+          <input
+            type="range"
+            id="calc-ac-hours"
+            min="0"
+            max="24"
+            value="8"
+            step="1"
+            class="w-full accent-blue-600 cursor-pointer h-2 bg-stone-200 dark:bg-stone-700 rounded-lg"
+          />
+          <div class="flex justify-between text-[10px] text-stone-400 mt-1">
+            <span>ไม่เปิดเลย (0 ชม.)</span>
+            <span>เปิดเฉพาะตอนนอน (8 ชม.)</span>
+            <span>ทั้งวันทั้งคืน (24 ชม.)</span>
+          </div>
+        </div>
+
+        <!-- Extra appliances & Water & Travel -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Water fee -->
+          <div>
+            <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
+              ค่าน้ำประปาประมาณการ (บาท/เดือน):
+            </label>
+            <input
+              type="number"
+              id="calc-water"
+              value="150"
+              min="0"
+              max="1000"
+              step="50"
+              class="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-stone-900 dark:text-white"
+            />
+          </div>
+
+          <!-- Commute fee -->
+          <div>
+            <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
+              ค่าเดินทางไป ม.เกษตร (บาท/เดือน):
+            </label>
+            <select
+              id="calc-commute"
+              class="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-stone-900 dark:text-white"
+            >
+              <option value="0">เดินไปเรียนได้ (0 บาท)</option>
+              <option value="300">ขี่มอเตอร์ไซค์ส่วนตัว ค่าน้ำมัน (~300 บาท)</option>
+              <option value="900" selected>นั่งวินมอไซค์ ไป-กลับ วันละ 30 บ. (~900 บาท)</option>
+              <option value="1500">นั่งวิน/สองแถว ไป-กลับ วันละ 50 บ. (~1,500 บาท)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Card (5 cols) -->
+      <div class="lg:col-span-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-stone-800 dark:to-stone-850 rounded-3xl p-6 border-2 border-blue-200 dark:border-stone-700 shadow-md">
+        <h4 class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">
+          สรุปค่าใช้จ่ายสุทธิโดยประมาณ
+        </h4>
+        <div class="flex items-baseline gap-1 mb-4">
+          <span id="total-monthly-cost" class="text-3xl md:text-4xl font-extrabold text-stone-900 dark:text-white">
+            0
+          </span>
+          <span class="text-sm font-bold text-stone-500 dark:text-stone-400">บาท / เดือน</span>
+        </div>
+
+        <!-- Breakdown List -->
+        <div class="space-y-2 text-xs border-t border-blue-100 dark:border-stone-700 pt-3">
+          <div class="flex justify-between text-stone-600 dark:text-stone-300">
+            <span>🏠 ค่าเช่าห้องพัก:</span>
+            <span id="summary-rent" class="font-bold text-stone-900 dark:text-white">0 บ.</span>
+          </div>
+          <div class="flex justify-between text-stone-600 dark:text-stone-300">
+            <span>⚡ ค่าไฟฟ้าประมาณการ (<span id="summary-units">0</span> หน่วย):</span>
+            <span id="summary-elec" class="font-bold text-blue-600 dark:text-blue-400">0 บ.</span>
+          </div>
+          <div class="flex justify-between text-stone-600 dark:text-stone-300">
+            <span>💧 ค่าน้ำประปา:</span>
+            <span id="summary-water" class="font-bold text-stone-900 dark:text-white">0 บ.</span>
+          </div>
+          <div class="flex justify-between text-stone-600 dark:text-stone-300">
+            <span>🛵 ค่าเดินทางไป ม.:</span>
+            <span id="summary-commute" class="font-bold text-stone-900 dark:text-white">0 บ.</span>
+          </div>
+        </div>
+
+        <!-- Secret Insight Box (ไฟหลวง vs ไฟหอ) -->
+        <div id="insight-box" class="mt-5 p-3.5 rounded-2xl bg-white/90 dark:bg-stone-900/90 border border-blue-200 dark:border-stone-700 text-xs">
+          <span class="font-bold text-stone-800 dark:text-stone-200 block mb-1">💡 ความจริงที่เด็กหอต้องรู้:</span>
+          <p id="insight-text" class="text-stone-600 dark:text-stone-400 leading-relaxed"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOL 2: Side-by-Side Dorm Comparison Matrix -->
+  <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-6 md:p-8 shadow-lg">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="w-10 h-10 rounded-2xl bg-indigo-100 dark:bg-stone-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl shadow-xs">
+        ⚖️
+      </span>
+      <div>
+        <h3 class="text-xl md:text-2xl font-extrabold text-stone-900 dark:text-white">
+          เปรียบเทียบหอพักแบบ Side-by-Side (ชนกันตัวต่อตัว)
+        </h3>
+        <p class="text-xs text-stone-500 dark:text-stone-400">
+          ลังเลระหว่าง 2 หอ? เลือกมาเทียบสเปกและค่าใช้จ่ายแบบชัดๆ
+        </p>
+      </div>
+    </div>
+
+    <!-- Selectors for 2 dorms -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div class="p-3 bg-stone-50 dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700">
+        <label class="block text-xs font-bold text-blue-600 dark:text-blue-400 mb-1">
+          เลือก หอพัก A:
+        </label>
+        <select
+          id="compare-dorm-a"
+          class="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 text-sm font-semibold text-stone-900 dark:text-white"
+        >
+          {dorms.map((d, idx) => (
+            <option value={d.id} selected={idx === 0}>{d.title}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="p-3 bg-stone-50 dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700">
+        <label class="block text-xs font-bold text-purple-600 dark:text-purple-400 mb-1">
+          เลือก หอพัก B:
+        </label>
+        <select
+          id="compare-dorm-b"
+          class="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 text-sm font-semibold text-stone-900 dark:text-white"
+        >
+          {dorms.map((d, idx) => (
+            <option value={d.id} selected={idx === 1}>{d.title}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <!-- Comparison Table / Cards -->
+    <div id="compare-matrix-container" class="overflow-x-auto">
+      <!-- Injected by script -->
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ dorms }}>
+  window.dormsData = dorms;
+
+  const rentInput = document.getElementById('calc-rent');
+  const elecRateInput = document.getElementById('calc-elec-rate');
+  const acHoursSlider = document.getElementById('calc-ac-hours');
+  const acHoursDisplay = document.getElementById('ac-hours-display');
+  const waterInput = document.getElementById('calc-water');
+  const commuteSelect = document.getElementById('calc-commute');
+  const dormPreset = document.getElementById('calc-dorm-preset');
+
+  const totalCostDisplay = document.getElementById('total-monthly-cost');
+  const summaryRent = document.getElementById('summary-rent');
+  const summaryElec = document.getElementById('summary-elec');
+  const summaryUnits = document.getElementById('summary-units');
+  const summaryWater = document.getElementById('summary-water');
+  const summaryCommute = document.getElementById('summary-commute');
+  const insightText = document.getElementById('insight-text');
+
+  // Calculate Living Cost
+  function recalculate() {
+    const rent = parseFloat(rentInput.value) || 0;
+    const elecRate = parseFloat(elecRateInput.value) || 8;
+    const acHours = parseFloat(acHoursSlider.value) || 0;
+    const water = parseFloat(waterInput.value) || 0;
+    const commute = parseFloat(commuteSelect.value) || 0;
+
+    acHoursDisplay.textContent = `${acHours} ชั่วโมง / วัน`;
+
+    // Standard AC in dorms (12,000 BTU) consumes ~1.0 kW per hour running
+    // With thermostat cycling, average power is ~0.75 kW per hour
+    // Base appliances (fridge, lights, fan, laptop) consume ~50 kWh/month
+    const acUnitsPerMonth = acHours * 0.75 * 30;
+    const baseUnitsPerMonth = 50;
+    const totalUnits = Math.round(acUnitsPerMonth + baseUnitsPerMonth);
+
+    const totalElecCost = Math.round(totalUnits * elecRate);
+    const totalMonthly = Math.round(rent + totalElecCost + water + commute);
+
+    // Format numbers
+    totalCostDisplay.textContent = totalMonthly.toLocaleString();
+    summaryRent.textContent = rent.toLocaleString() + ' บ.';
+    summaryUnits.textContent = totalUnits.toLocaleString();
+    summaryElec.textContent = totalElecCost.toLocaleString() + ' บ.';
+    summaryWater.textContent = water.toLocaleString() + ' บ.';
+    summaryCommute.textContent = commute.toLocaleString() + ' บ.';
+
+    // Insight calculation (Savings if government rate ~4.5 vs dorm rate 8.0)
+    const govElecCost = Math.round(totalUnits * 4.5);
+    const diff = totalElecCost - govElecCost;
+
+    if (elecRate > 5) {
+      insightText.innerHTML = `ถ้าคุณเลือกอยู่หอที่คิดค่าไฟ ${elecRate} บาท/หน่วย คุณจะจ่ายค่าไฟ <b>${totalElecCost.toLocaleString()} บาท/ด.</b> แต่ถ้าเลือกคอนโด <b>"ไฟหลวง"</b> (~4.5 บ.) จะจ่ายเพียง <b>${govElecCost.toLocaleString()} บาท/ด.</b> (ประหยัดได้ถึง <b>${diff.toLocaleString()} บาท/ด.</b> หรือปีละ <b>${(diff * 12).toLocaleString()} บาท!</b>)`;
+    } else {
+      insightText.innerHTML = `ยอดเยี่ยมมาก! อัตราค่าไฟ <b>${elecRate} บาท/หน่วย</b> เป็นอัตราไฟหลวงโดยตรง คุณจะประหยัดค่าไฟช่วงหน้าร้อนได้มากกว่าหอพักทั่วไปอย่างน้อยเดือนละ <b>1,000 - 2,500 บาท</b> เลยทีเดียว`;
+    }
+  }
+
+  // Event Listeners for Calc
+  [rentInput, elecRateInput, acHoursSlider, waterInput, commuteSelect].forEach((el) => {
+    if (el) el.addEventListener('input', recalculate);
+  });
+
+  document.getElementById('preset-gov-rate')?.addEventListener('click', () => {
+    elecRateInput.value = '4.5';
+    recalculate();
+  });
+
+  document.getElementById('preset-dorm-rate')?.addEventListener('click', () => {
+    elecRateInput.value = '8.0';
+    recalculate();
+  });
+
+  dormPreset?.addEventListener('change', () => {
+    const val = dormPreset.value;
+    if (val === 'custom') return;
+
+    const dorm = window.dormsData.find((d) => d.id === val);
+    if (!dorm) return;
+
+    // Parse rent from price string (e.g. "4,000 - 5,500 บาท/เดือน")
+    const rentMatches = dorm.price?.match(/\d[\d,]*/);
+    if (rentMatches) {
+      rentInput.value = rentMatches[0].replace(/,/g, '');
+    }
+
+    // Parse elec
+    if (dorm.electricityRate?.includes('ไฟหลวง')) {
+      elecRateInput.value = '4.5';
+    } else {
+      const elecMatch = dorm.electricityRate?.match(/\d+(\.\d+)?/);
+      elecRateInput.value = elecMatch ? elecMatch[0] : '8.0';
+    }
+
+    recalculate();
+  });
+
+  // TOOL 2: Side-by-Side Comparison
+  const dormASelect = document.getElementById('compare-dorm-a');
+  const dormBSelect = document.getElementById('compare-dorm-b');
+  const matrixContainer = document.getElementById('compare-matrix-container');
+
+  function renderMatrix() {
+    if (!matrixContainer) return;
+    const dormA = window.dormsData.find((d) => d.id === dormASelect.value) || window.dormsData[0];
+    const dormB = window.dormsData.find((d) => d.id === dormBSelect.value) || window.dormsData[1];
+
+    if (!dormA || !dormB) return;
+
+    matrixContainer.innerHTML = `
+      <table class="w-full text-xs text-left border-collapse">
+        <thead>
+          <tr class="border-b border-stone-200 dark:border-stone-700">
+            <th class="p-3 text-stone-400 font-bold w-1/3">คุณสมบัติ</th>
+            <th class="p-3 font-extrabold text-blue-600 dark:text-blue-400 text-sm w-1/3">
+              ${dormA.title}
+            </th>
+            <th class="p-3 font-extrabold text-purple-600 dark:text-purple-400 text-sm w-1/3">
+              ${dormB.title}
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-100 dark:divide-stone-800 text-stone-700 dark:text-stone-300">
+          <tr>
+            <td class="p-3 font-semibold text-stone-400">รูปภาพ</td>
+            <td class="p-3">
+              <img src="${dormA.coverImage}" class="w-full h-28 object-cover rounded-xl" />
+            </td>
+            <td class="p-3">
+              <img src="${dormB.coverImage}" class="w-full h-28 object-cover rounded-xl" />
+            </td>
+          </tr>
+          <tr>
+            <td class="p-3 font-semibold text-stone-400">ประเภท</td>
+            <td class="p-3 font-bold">${dormA.category}</td>
+            <td class="p-3 font-bold">${dormB.category}</td>
+          </tr>
+          <tr>
+            <td class="p-3 font-semibold text-stone-400">โซนที่ตั้ง</td>
+            <td class="p-3 font-semibold">📍 ${dormA.zone}</td>
+            <td class="p-3 font-semibold">📍 ${dormB.zone}</td>
+          </tr>
+          <tr>
+            <td class="p-3 font-semibold text-stone-400">ค่าเช่าเริ่มต้น</td>
+            <td class="p-3 font-extrabold text-blue-600 text-sm">${dormA.price}</td>
+            <td class="p-3 font-extrabold text-purple-600 text-sm">${dormB.price}</td>
+          </tr>
+          <tr>
+            <td class="p-3 font-semibold text-stone-400">อัตราค่าไฟฟ้า</td>
+            <td class="p-3">
+              <span class="${dormA.electricityRate?.includes('ไฟหลวง') ? 'text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded' : 'font-semibold'}">
+                ${dormA.electricityRate || '-'}
+              </span>
+            </td>
+            <td class="p-3">
+              <span class="${dormB.electricityRate?.includes('ไฟหลวง') ? 'text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded' : 'font-semibold'}">
+                ${dormB.electricityRate || '-'}
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <td class="p-3 font-semibold text-stone-400">ค่าน้ำประปา</td>
+            <td class="p-3">${dormA.waterRate || '-'}</td>
+            <td class="p-3">${dormB.waterRate || '-'}</td>
+          </tr>
+          <tr>
+            <td class="p-3 font-semibold text-stone-400">เลี้ยงสัตว์ได้ไหม</td>
+            <td class="p-3">
+              ${dormA.petFriendly ? '<span class="text-emerald-600 font-bold">🐾 เลี้ยงสัตว์ได้</span>' : '<span class="text-stone-400">❌ ไม่อนุญาต</span>'}
+            </td>
+            <td class="p-3">
+              ${dormB.petFriendly ? '<span class="text-emerald-600 font-bold">🐾 เลี้ยงสัตว์ได้</span>' : '<span class="text-stone-400">❌ ไม่อนุญาต</span>'}
+            </td>
+          </tr>
+          <tr>
+            <td class="p-3 font-semibold text-stone-400">ดูรีวิวและพิกัด</td>
+            <td class="p-3">
+              <a href="${dormA.url}" class="inline-block py-1.5 px-3 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold">ดูรายละเอียด</a>
+            </td>
+            <td class="p-3">
+              <a href="${dormB.url}" class="inline-block py-1.5 px-3 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 font-bold">ดูรายละเอียด</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  }
+
+  dormASelect?.addEventListener('change', renderMatrix);
+  dormBSelect?.addEventListener('change', renderMatrix);
+
+  // Initial runs
+  recalculate();
+  renderMatrix();
+</script>

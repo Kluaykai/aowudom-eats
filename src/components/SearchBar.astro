@@ -1,85 +1,188 @@
 ---
-// SearchBar.astro - Client-side instant filter without heavy libraries
+// SearchBar.astro - Client-side instant filter with "Open Now" detection
 ---
 
-<div class="relative w-full max-w-xl mx-auto my-6" id="search-container">
+<div class="relative w-full max-w-2xl mx-auto my-6" id="search-container">
   <div class="relative flex items-center">
     <span class="absolute left-4 text-stone-400 text-lg pointer-events-none">🔍</span>
     <input
       type="text"
       id="search-input"
       placeholder="ค้นหาชื่อร้าน, คอนโด, หอพัก, ร้านเหล้า, ปะยาง, กาแฟ, ปิดดึก..."
-      class="w-full bg-white border border-stone-200 rounded-2xl pl-12 pr-10 py-3.5 text-sm md:text-base text-stone-800 placeholder-stone-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+      class="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl pl-12 pr-10 py-3.5 text-sm md:text-base text-stone-900 dark:text-white placeholder-stone-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
     />
     <button
       id="clear-search"
-      class="hidden absolute right-4 text-stone-400 hover:text-stone-600 text-sm font-semibold p-1"
+      class="hidden absolute right-4 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 text-sm font-semibold p-1"
       aria-label="ล้างการค้นหา"
     >
       ✕
     </button>
   </div>
-  <p id="search-status" class="hidden text-xs text-stone-500 mt-2 px-2"></p>
+
+  <!-- Smart Quick Filters -->
+  <div class="flex items-center justify-center flex-wrap gap-2 mt-3 text-xs">
+    <button
+      type="button"
+      id="filter-open-now-btn"
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 hover:border-emerald-500 transition-all shadow-2xs font-semibold cursor-pointer"
+    >
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span>เปิดอยู่ตอนนี้</span>
+    </button>
+
+    <button
+      type="button"
+      data-open-wheel
+      class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-orange-50 dark:bg-stone-800 text-brand-600 dark:text-brand-400 border border-orange-200 dark:border-stone-700 hover:bg-orange-100 transition-all font-semibold cursor-pointer"
+    >
+      <span>🎲 สุ่มของกิน</span>
+    </button>
+
+    <a
+      href="/map"
+      class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 hover:border-emerald-500 transition-all font-semibold"
+    >
+      <span>🗺️ ดูบนแผนที่</span>
+    </a>
+
+    <a
+      href="/calculator"
+      class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 hover:border-blue-500 transition-all font-semibold"
+    >
+      <span>⚡ คำนวณค่าไฟหอ</span>
+    </a>
+  </div>
+
+  <p id="search-status" class="hidden text-xs text-stone-500 dark:text-stone-400 mt-2 px-2 text-center"></p>
 </div>
 
 <script>
   const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
   const clearBtn = document.getElementById('clear-search');
   const searchStatus = document.getElementById('search-status');
+  const openNowBtn = document.getElementById('filter-open-now-btn');
   const searchableCards = document.querySelectorAll<HTMLElement>('[data-searchable-card]');
 
-  if (searchInput && searchableCards.length > 0) {
-    searchInput.addEventListener('input', (e) => {
-      const term = (e.target as HTMLInputElement).value.trim().toLowerCase();
-      let matchCount = 0;
+  let onlyOpenNow = false;
 
-      if (term.length > 0) {
-        clearBtn?.classList.remove('hidden');
-      } else {
-        clearBtn?.classList.add('hidden');
+  // Real-time calculation of Open / Closed Status
+  function checkOpenStatus() {
+    const now = new Date();
+    // Thailand time: UTC+7
+    const currentHour = now.getHours() + now.getMinutes() / 60;
+
+    searchableCards.forEach((card) => {
+      const openHoursRaw = card.getAttribute('data-open-hours');
+      const badge = card.querySelector<HTMLElement>('[data-open-badge]');
+      if (!openHoursRaw || !badge) return;
+
+      // Check 24 hour cases
+      if (openHoursRaw.includes('24 ชั่วโมง') || openHoursRaw.includes('24 ชม')) {
+        badge.classList.remove('hidden');
+        badge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-sm bg-emerald-500 text-white flex items-center gap-1';
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> เปิด 24 ชม.';
+        card.setAttribute('data-is-open', 'true');
+        return;
       }
 
-      searchableCards.forEach((card) => {
-        const keywords = card.getAttribute('data-keywords')?.toLowerCase() || '';
-        if (keywords.includes(term)) {
-          card.style.display = '';
-          matchCount++;
+      // Parse hours like "17:30 - 02:00" or "07:00 - 16:00"
+      const match = openHoursRaw.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+      if (match) {
+        const start = parseInt(match[1]) + parseInt(match[2]) / 60;
+        let end = parseInt(match[3]) + parseInt(match[4]) / 60;
+        
+        let isOpen = false;
+        if (end < start) {
+          // Crosses midnight, e.g. 17:00 - 02:00
+          if (currentHour >= start || currentHour < end) {
+            isOpen = true;
+          }
         } else {
-          card.style.display = 'none';
+          if (currentHour >= start && currentHour < end) {
+            isOpen = true;
+          }
         }
-      });
 
-      // Show/hide category section containers if they have visible items
-      document.querySelectorAll<HTMLElement>('.category-group').forEach((group) => {
-        const visibleInGroup = group.querySelectorAll<HTMLElement>('[data-searchable-card]:not([style*="display: none"])');
-        if (term.length > 0) {
-          group.style.display = visibleInGroup.length > 0 ? 'block' : 'none';
+        badge.classList.remove('hidden');
+        if (isOpen) {
+          badge.className = 'text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-sm bg-emerald-500 text-white flex items-center gap-1';
+          badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> เปิดอยู่';
+          card.setAttribute('data-is-open', 'true');
         } else {
-          group.style.display = '';
-        }
-      });
-
-      if (searchStatus) {
-        if (term.length > 0) {
-          searchStatus.classList.remove('hidden');
-          searchStatus.textContent = `พบทั้งหมด ${matchCount} รายการที่ตรงกับ "${term}"`;
-        } else {
-          searchStatus.classList.add('hidden');
+          badge.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm bg-stone-800/80 text-stone-300';
+          badge.textContent = 'ปิดแล้ว';
+          card.setAttribute('data-is-open', 'false');
         }
       }
-    });
-
-    clearBtn?.addEventListener('click', () => {
-      searchInput.value = '';
-      clearBtn.classList.add('hidden');
-      if (searchStatus) searchStatus.classList.add('hidden');
-      searchableCards.forEach((card) => {
-        card.style.display = '';
-      });
-      document.querySelectorAll<HTMLElement>('.category-group').forEach((group) => {
-        group.style.display = '';
-      });
-      searchInput.focus();
     });
   }
+
+  function applyFilters() {
+    const term = (searchInput?.value || '').trim().toLowerCase();
+    let matchCount = 0;
+
+    if (term.length > 0) {
+      clearBtn?.classList.remove('hidden');
+    } else {
+      clearBtn?.classList.add('hidden');
+    }
+
+    searchableCards.forEach((card) => {
+      const keywords = card.getAttribute('data-keywords')?.toLowerCase() || '';
+      const matchesSearch = term.length === 0 || keywords.includes(term);
+      const matchesOpen = !onlyOpenNow || card.getAttribute('data-is-open') === 'true';
+
+      if (matchesSearch && matchesOpen) {
+        card.style.display = '';
+        matchCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Toggle category group wrappers
+    document.querySelectorAll<HTMLElement>('.category-group').forEach((group) => {
+      const visible = group.querySelectorAll<HTMLElement>('[data-searchable-card]:not([style*="display: none"])');
+      if (term.length > 0 || onlyOpenNow) {
+        group.style.display = visible.length > 0 ? 'block' : 'none';
+      } else {
+        group.style.display = '';
+      }
+    });
+
+    if (searchStatus) {
+      if (term.length > 0 || onlyOpenNow) {
+        searchStatus.classList.remove('hidden');
+        searchStatus.textContent = `พบ ${matchCount} รายการ ${onlyOpenNow ? '(เปิดอยู่ตอนนี้)' : ''} ${term ? `ที่ตรงกับ "${term}"` : ''}`;
+      } else {
+        searchStatus.classList.add('hidden');
+      }
+    }
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', applyFilters);
+  }
+
+  clearBtn?.addEventListener('click', () => {
+    if (searchInput) searchInput.value = '';
+    applyFilters();
+    searchInput?.focus();
+  });
+
+  openNowBtn?.addEventListener('click', () => {
+    onlyOpenNow = !onlyOpenNow;
+    if (onlyOpenNow) {
+      openNowBtn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
+      openNowBtn.classList.remove('bg-white', 'dark:bg-stone-800', 'text-stone-700', 'dark:text-stone-300');
+    } else {
+      openNowBtn.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600');
+      openNowBtn.classList.add('bg-white', 'dark:bg-stone-800', 'text-stone-700', 'dark:text-stone-300');
+    }
+    applyFilters();
+  });
+
+  // Run open status check on page load
+  checkOpenStatus();
 </script>

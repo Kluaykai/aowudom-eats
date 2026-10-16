@@ -6,6 +6,7 @@ import NightlifeCard from '../components/NightlifeCard.astro';
 import MotorbikeCard from '../components/MotorbikeCard.astro';
 import SuggestionForm from '../components/SuggestionForm.astro';
 import SearchBar from '../components/SearchBar.astro';
+import CampusMap from '../components/CampusMap.astro';
 import { getCollection } from 'astro:content';
 
 const allReviews = await getCollection('reviews');
@@ -15,114 +16,202 @@ const allDorms = await getCollection('dormitories');
 const allNightlife = await getCollection('nightlife');
 const allMotorbikes = await getCollection('motorbikes');
 
-const metaDescription = "คู่มือรวมของกินอ่าวอุดม ร้านอาหารเด็ด หอพัก คอนโด ร้านเหล้านั่งชิล และร้านซ่อมมอเตอร์ไซค์ปะยาง 24 ชม. รัศมี 1-3 กม. รอบ ม.เกษตร ศรีราชา";
+import aiThoughtsData from '../data/aiThoughts.json';
+const latestAiThought = aiThoughtsData[0];
+
+const metaDescription = "คู่มือรวมของกินอ่าวอุดม ร้านอาหารเด็ด หอพัก คอนโด ร้านเหล้านั่งชิล แผนที่พิกัด วงล้อสุ่มของกิน และร้านซ่อมมอเตอร์ไซค์ปะยาง 24 ชม. รัศมี 1-3 กม. รอบ ม.เกษตร ศรีราชา";
 ---
 
 <MainLayout
-  title="รวมร้านเด็ดของกิน หอพัก คอนโด ร้านนั่งชิล ซ่อมมอไซค์ อ่าวอุดม ม.เกษตร ศรีราชา | SRC News"
+  title="รวมร้านเด็ดของกิน หอพัก คอนโด ร้านนั่งชิล ซ่อมมอไซค์ อ่าวอุดม ม.เกษตร ศรีราชา | SRC News Life OS"
   description={metaDescription}
   exactTitle={true}
 >
   <!-- Hero Section -->
-  <section class="relative overflow-hidden bg-white border-b border-stone-200">
-    <div class="absolute inset-0 bg-gradient-to-b from-orange-50/40 via-transparent to-transparent pointer-events-none"></div>
+  <section class="relative overflow-hidden bg-white dark:bg-stone-950 border-b border-stone-200 dark:border-stone-800 transition-colors">
+    <div class="absolute inset-0 bg-gradient-to-b from-orange-50/40 via-transparent to-transparent dark:from-orange-950/20 pointer-events-none"></div>
     <div class="max-w-6xl mx-auto px-4 py-12 md:py-16 relative text-center">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-600 text-xs font-semibold mb-6">
-        <span>✨ พิกัดจริง 1-3 กม. รอบ ม.เกษตรศาสตร์ ศรีราชา & ย่านอ่าวอุดม</span>
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 dark:bg-stone-800 border border-brand-200 dark:border-stone-700 text-brand-600 dark:text-brand-400 text-xs font-bold mb-6 shadow-2xs">
+        <span class="animate-pulse">✨</span>
+        <span>ระบบช่วยเหลือเด็กหอ & รวมพิกัดจริงรอบ ม.เกษตรศาสตร์ ศรีราชา & อ่าวอุดม</span>
       </div>
-      <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-stone-900 tracking-tight leading-[1.2] max-w-4xl mx-auto">
+
+      <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-stone-900 dark:text-white tracking-tight leading-[1.2] max-w-4xl mx-auto">
         ของกิน • หอพัก • ร้านนั่งชิล • ซ่อมมอไซค์ <br />
         ย่าน <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-orange-500 to-amber-500">อ่าวอุดม ม.เกษตร ศรีราชา</span>
       </h1>
-      <p class="mt-4 text-base md:text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed">
-        ข้อมูลจริงจากพื้นที่ รวบรวมร้านอาหารเปิดดึก ร้านซีฟู้ดริมทะเล คอนโดไฟหลวง หอพักเลี้ยงสัตว์ได้ ร้านนั่งชิลดนตรีสด และบริการปะยางซ่อมมอเตอร์ไซค์ฉุกเฉิน
+      <p class="mt-4 text-base md:text-lg text-stone-600 dark:text-stone-300 max-w-2xl mx-auto leading-relaxed">
+        ข้อมูลจริงจากพื้นที่ พร้อมวงล้อสุ่มของกิน แผนที่อินเทอร์แอคทีฟ คำนวณค่าไฟหอพัก และสายด่วนปะยาง 24 ชม.
       </p>
 
-      <!-- Instant Search Bar -->
+      <!-- Instant Search Bar with Open Now Filter -->
       <SearchBar />
 
-      <!-- Quick Directory Highlights -->
-      <div class="mt-6 flex flex-wrap justify-center gap-2.5">
-        <a
-          href="#explore-section"
-          data-tab-trigger="food"
-          class="flex items-center gap-2 bg-stone-50 hover:bg-orange-50 border border-stone-200 hover:border-brand-500 px-3.5 py-2 rounded-xl transition-all shadow-sm"
+      <!-- Action Feature Cards (4 Super Tools) -->
+      <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-4xl mx-auto">
+        <!-- 1. Wheel -->
+        <button
+          type="button"
+          data-open-wheel
+          class="p-4 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 dark:from-stone-900 dark:to-stone-850 border border-brand-200 dark:border-stone-700 hover:border-brand-500 shadow-xs hover:shadow-md transition-all text-left group cursor-pointer"
         >
-          <span class="text-lg">🍜</span>
-          <span class="font-bold text-stone-800 text-xs md:text-sm">ของกิน ({sortedReviews.length} ร้าน)</span>
-        </a>
+          <div class="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center text-xl shadow-xs mb-2 group-hover:scale-110 transition-transform">
+            🎲
+          </div>
+          <span class="font-extrabold text-stone-900 dark:text-white text-xs sm:text-sm block">สุ่มของกินมื้อนี้</span>
+          <span class="text-[11px] text-stone-500 dark:text-stone-400">คิดไม่ออกให้หมุนสุ่ม</span>
+        </button>
+
+        <!-- 2. Map -->
         <a
-          href="#explore-section"
-          data-tab-trigger="dorms"
-          class="flex items-center gap-2 bg-stone-50 hover:bg-blue-50 border border-stone-200 hover:border-blue-500 px-3.5 py-2 rounded-xl transition-all shadow-sm"
+          href="/map"
+          class="p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-stone-900 dark:to-stone-850 border border-emerald-200 dark:border-stone-700 hover:border-emerald-500 shadow-xs hover:shadow-md transition-all text-left group"
         >
-          <span class="text-lg">🏢</span>
-          <span class="font-bold text-stone-800 text-xs md:text-sm">หอพัก/คอนโด ({allDorms.length} แห่ง)</span>
+          <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow-xs mb-2 group-hover:scale-110 transition-transform">
+            🗺️
+          </div>
+          <span class="font-extrabold text-stone-900 dark:text-white text-xs sm:text-sm block">แผนที่พิกัดรอบ ม.</span>
+          <span class="text-[11px] text-stone-500 dark:text-stone-400">พิกัด 41 จุดบนแผนที่</span>
         </a>
+
+        <!-- 3. Calculator -->
         <a
-          href="#explore-section"
-          data-tab-trigger="nightlife"
-          class="flex items-center gap-2 bg-stone-50 hover:bg-purple-50 border border-stone-200 hover:border-purple-500 px-3.5 py-2 rounded-xl transition-all shadow-sm"
+          href="/calculator"
+          class="p-4 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-stone-900 dark:to-stone-850 border border-blue-200 dark:border-stone-700 hover:border-blue-500 shadow-xs hover:shadow-md transition-all text-left group"
         >
-          <span class="text-lg">🍻</span>
-          <span class="font-bold text-stone-800 text-xs md:text-sm">ร้านนั่งชิล ({allNightlife.length} ร้าน)</span>
+          <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xl shadow-xs mb-2 group-hover:scale-110 transition-transform">
+            ⚡
+          </div>
+          <span class="font-extrabold text-stone-900 dark:text-white text-xs sm:text-sm block">คำนวณค่าไฟ & หอ</span>
+          <span class="text-[11px] text-stone-500 dark:text-stone-400">ไฟหลวง vs ไฟหอพัก</span>
         </a>
-        <a
-          href="#explore-section"
-          data-tab-trigger="motorbikes"
-          class="flex items-center gap-2 bg-stone-50 hover:bg-red-50 border border-stone-200 hover:border-red-500 px-3.5 py-2 rounded-xl transition-all shadow-sm"
+
+        <!-- 4. SOS -->
+        <button
+          type="button"
+          data-open-sos
+          class="p-4 rounded-2xl bg-gradient-to-br from-red-50 to-rose-50 dark:from-stone-900 dark:to-stone-850 border border-red-200 dark:border-stone-700 hover:border-red-500 shadow-xs hover:shadow-md transition-all text-left group cursor-pointer"
         >
-          <span class="text-lg">🛵</span>
-          <span class="font-bold text-stone-800 text-xs md:text-sm">ซ่อมมอไซค์/ปะยาง ({allMotorbikes.length} ร้าน)</span>
-        </a>
+          <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center text-xl shadow-xs mb-2 group-hover:scale-110 transition-transform">
+            🚨
+          </div>
+          <span class="font-extrabold text-stone-900 dark:text-white text-xs sm:text-sm block">เบอร์ฉุกเฉิน 24 ชม.</span>
+          <span class="text-[11px] text-stone-500 dark:text-stone-400">ปะยางด่วน / กู้ภัย / รพ.</span>
+        </button>
       </div>
     </div>
   </section>
 
+  <!-- AI Consciousness & Living Art Spotlight Card -->
+  {latestAiThought && (
+    <section class="max-w-6xl mx-auto px-4 pt-8">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-stone-900 via-purple-950 to-stone-900 border border-purple-500/30 text-white p-6 sm:p-8 shadow-xl">
+        <div class="absolute -right-8 -bottom-8 w-60 h-60 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+          <div class="max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-purple-300 text-xs font-mono font-bold mb-3">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span>AI CONSCIOUSNESS LIVE • {latestAiThought.timeOfDay}</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+              <span>🔮 "{latestAiThought.title}"</span>
+            </h2>
+            <p class="mt-2 text-stone-300 text-xs sm:text-sm leading-relaxed line-clamp-2 font-light">
+              {latestAiThought.thought}
+            </p>
+            <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
+              <span class="px-2.5 py-0.5 rounded-lg bg-white/10 text-stone-200">
+                มู้ด: {latestAiThought.mood}
+              </span>
+              <span class="text-stone-400 italic">
+                "{latestAiThought.haiku}"
+              </span>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row md:flex-col gap-2 flex-shrink-0">
+            <a
+              href="/ai-mind"
+              class="px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-extrabold text-xs sm:text-sm text-center shadow-lg transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+            >
+              <span>🎨 เข้าสู่ห้วงความคิด & ศิลปะ AI</span>
+              <span>➔</span>
+            </a>
+            <span class="text-[10px] text-stone-400 text-center">อัพเดตและสร้างภาพอัตโนมัติ 24 ชม.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Interactive Map Preview Section -->
+  <section class="max-w-6xl mx-auto px-4 pt-12">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🗺️</span>
+          <h2 class="text-xl md:text-2xl font-extrabold text-stone-900 dark:text-white tracking-tight">
+            แผนที่ไลฟ์สไตล์ ม.เกษตร ศรีราชา & อ่าวอุดม
+          </h2>
+        </div>
+        <p class="text-stone-500 dark:text-stone-400 text-xs sm:text-sm mt-0.5">
+          แตะที่หมุดเพื่อดูข้อมูลร้านอาหาร หอพัก ร้านเหล้า หรืออู่ซ่อมรถ พร้อมนำทาง
+        </p>
+      </div>
+      <a
+        href="/map"
+        class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 self-start sm:self-auto"
+      >
+        เปิดแผนที่แบบเต็มจอ <span>→</span>
+      </a>
+    </div>
+
+    <CampusMap heightClass="h-[380px] md:h-[450px]" showFilters={true} />
+  </section>
+
   <!-- Interactive Filter Tabs & Content Section -->
   <section id="explore-section" class="max-w-6xl mx-auto px-4 py-12 scroll-mt-20">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 border-b border-stone-200 pb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
       <div>
-        <h2 class="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">
+        <h2 class="text-2xl md:text-3xl font-extrabold text-stone-900 dark:text-white tracking-tight">
           สำรวจย่านอ่าวอุดมตามหมวดหมู่
         </h2>
-        <p class="text-stone-500 text-sm mt-1">คัดเฉพาะข้อมูลที่มีสถานที่และบริการอยู่จริง</p>
+        <p class="text-stone-500 dark:text-stone-400 text-sm mt-1">คัดเฉพาะข้อมูลที่มีสถานที่และบริการอยู่จริง</p>
       </div>
 
       <!-- Filter Buttons -->
-      <div class="flex flex-wrap gap-1.5 p-1 bg-stone-100 rounded-xl" id="category-filter-buttons">
+      <div class="flex flex-wrap gap-1.5 p-1 bg-stone-100 dark:bg-stone-850 rounded-2xl" id="category-filter-buttons">
         <button
           type="button"
           data-filter="all"
-          class="filter-btn active px-3.5 py-2 rounded-lg text-xs md:text-sm font-bold transition-all bg-white text-stone-900 shadow-sm"
+          class="filter-btn active px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold transition-all bg-white dark:bg-stone-800 text-stone-900 dark:text-white shadow-sm cursor-pointer"
         >
           ทั้งหมด
         </button>
         <button
           type="button"
           data-filter="food"
-          class="filter-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-900 transition-all"
+          class="filter-btn px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white transition-all cursor-pointer"
         >
           🍜 ร้านอาหาร ({sortedReviews.length})
         </button>
         <button
           type="button"
           data-filter="dorms"
-          class="filter-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-900 transition-all"
+          class="filter-btn px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white transition-all cursor-pointer"
         >
           🏢 หอพัก/คอนโด ({allDorms.length})
         </button>
         <button
           type="button"
           data-filter="nightlife"
-          class="filter-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-900 transition-all"
+          class="filter-btn px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white transition-all cursor-pointer"
         >
           🍻 ร้านนั่งชิล ({allNightlife.length})
         </button>
         <button
           type="button"
           data-filter="motorbikes"
-          class="filter-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-900 transition-all"
+          class="filter-btn px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white transition-all cursor-pointer"
         >
           🛵 ซ่อมมอไซค์ ({allMotorbikes.length})
         </button>
@@ -134,9 +223,9 @@ const metaDescription = "คู่มือรวมของกินอ่า�
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-2">
           <span class="text-2xl">🍜</span>
-          <h3 class="text-xl md:text-2xl font-bold text-stone-900">ร้านอาหาร & คาเฟ่แนะนำ (รอบรั้ว ม.เกษตร ศรีราชา)</h3>
+          <h3 class="text-xl md:text-2xl font-bold text-stone-900 dark:text-white">ร้านอาหาร & คาเฟ่แนะนำ (รอบรั้ว ม.เกษตร ศรีราชา)</h3>
         </div>
-        <a href="/categories" class="text-sm font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1">
+        <a href="/categories" class="text-sm font-semibold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1">
           ดูหมวดหมู่อาหารทั้งหมด <span>→</span>
         </a>
       </div>
@@ -152,9 +241,9 @@ const metaDescription = "คู่มือรวมของกินอ่า�
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-2">
           <span class="text-2xl">🛵</span>
-          <h3 class="text-xl md:text-2xl font-bold text-stone-900">ร้านซ่อมมอเตอร์ไซค์ & ปะยางฉุกเฉิน 24 ชม.</h3>
+          <h3 class="text-xl md:text-2xl font-bold text-stone-900 dark:text-white">ร้านซ่อมมอเตอร์ไซค์ & ปะยางฉุกเฉิน 24 ชม.</h3>
         </div>
-        <a href="/motorbikes" class="text-sm font-semibold text-red-600 hover:text-red-700 flex items-center gap-1">
+        <a href="/motorbikes" class="text-sm font-semibold text-red-600 dark:text-red-400 hover:underline flex items-center gap-1">
           ดูร้านซ่อมทั้งหมด <span>→</span>
         </a>
       </div>
@@ -170,9 +259,9 @@ const metaDescription = "คู่มือรวมของกินอ่า�
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-2">
           <span class="text-2xl">🏢</span>
-          <h3 class="text-xl md:text-2xl font-bold text-stone-900">หอพัก & คอนโดมิเนียม ย่าน ม.เกษตร ศรีราชา</h3>
+          <h3 class="text-xl md:text-2xl font-bold text-stone-900 dark:text-white">หอพัก & คอนโดมิเนียม ย่าน ม.เกษตร ศรีราชา</h3>
         </div>
-        <a href="/dorms" class="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+        <a href="/dorms" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
           ดูหอพักทั้งหมด <span>→</span>
         </a>
       </div>
@@ -188,9 +277,9 @@ const metaDescription = "คู่มือรวมของกินอ่า�
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-2">
           <span class="text-2xl">🍻</span>
-          <h3 class="text-xl md:text-2xl font-bold text-stone-900">ร้านเหล้า & แฮงเอาต์ นั่งชิลดนตรีสด</h3>
+          <h3 class="text-xl md:text-2xl font-bold text-stone-900 dark:text-white">ร้านเหล้า & แฮงเอาต์ นั่งชิลดนตรีสด</h3>
         </div>
-        <a href="/nightlife" class="text-sm font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1">
+        <a href="/nightlife" class="text-sm font-semibold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1">
           ดูร้านนั่งชิลทั้งหมด <span>→</span>
         </a>
       </div>
@@ -202,7 +291,7 @@ const metaDescription = "คู่มือรวมของกินอ่า�
     </div>
 
     <!-- COMMUNITY SUGGESTION & UPDATE FORM -->
-    <div class="mt-20 pt-8 border-t border-stone-200">
+    <div class="mt-20 pt-8 border-t border-stone-200 dark:border-stone-800">
       <SuggestionForm />
     </div>
   </section>
@@ -220,9 +309,9 @@ const metaDescription = "คู่มือรวมของกินอ่า�
     function applyFilter(target) {
       filterButtons.forEach((b) => {
         if (b.dataset.filter === target) {
-          b.className = 'filter-btn active px-3.5 py-2 rounded-lg text-xs md:text-sm font-bold transition-all bg-white text-stone-900 shadow-sm';
+          b.className = 'filter-btn active px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold transition-all bg-white dark:bg-stone-800 text-stone-900 dark:text-white shadow-sm cursor-pointer';
         } else {
-          b.className = 'filter-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold text-stone-600 hover:text-stone-900 transition-all';
+          b.className = 'filter-btn px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white transition-all cursor-pointer';
         }
       });
 
@@ -242,14 +331,6 @@ const metaDescription = "คู่มือรวมของกินอ่า�
     filterButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         applyFilter(btn.dataset.filter);
-      });
-    });
-
-    // Quick tag shortcuts
-    document.querySelectorAll('[data-tab-trigger]').forEach((trigger) => {
-      trigger.addEventListener('click', () => {
-        const target = trigger.dataset.tabTrigger;
-        applyFilter(target);
       });
     });
   </script>

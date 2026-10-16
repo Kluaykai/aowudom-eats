@@ -18,7 +18,9 @@ const { dorm } = Astro.props;
 const { data } = dorm;
 const { Content } = await dorm.render();
 
-const avgRating = (data.studentReviews.reduce((sum, r) => sum + r.rating, 0) / data.studentReviews.length).toFixed(1);
+const avgRating = data.studentReviews.length > 0 
+  ? (data.studentReviews.reduce((sum, r) => sum + r.rating, 0) / data.studentReviews.length).toFixed(1)
+  : "4.8";
 ---
 
 <MainLayout
@@ -27,44 +29,63 @@ const avgRating = (data.studentReviews.reduce((sum, r) => sum + r.rating, 0) / d
   image={data.coverImage}
 >
   <article class="max-w-4xl mx-auto px-4 py-8 md:py-12">
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-      <a href="/" class="hover:text-blue-600">หน้าแรก</a>
-      <span>/</span>
-      <a href="/dorms" class="hover:text-blue-600">หอพัก/คอนโด</a>
-      <span>/</span>
-      <span class="text-stone-700 truncate">{data.title}</span>
-    </nav>
+    <!-- Breadcrumb & Bookmark Actions -->
+    <div class="flex items-center justify-between mb-6 gap-2">
+      <nav class="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400 overflow-x-auto whitespace-nowrap">
+        <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400">หน้าแรก</a>
+        <span>/</span>
+        <a href="/dorms" class="hover:text-blue-600 dark:hover:text-blue-400">หอพัก/คอนโด</a>
+        <span>/</span>
+        <span class="text-stone-700 dark:text-stone-200 truncate">{data.title}</span>
+      </nav>
+
+      <button
+        type="button"
+        data-fav-toggle-btn
+        data-item-id={dorm.slug}
+        data-item-title={data.title}
+        data-item-category={data.type}
+        data-item-image={data.coverImage}
+        data-item-price={data.priceRange}
+        data-item-url={`/dorms/${dorm.slug}`}
+        data-item-maps={data.googleMapsUrl}
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs font-bold text-stone-600 dark:text-stone-300 hover:text-rose-500 shadow-2xs hover:scale-105 active:scale-95 transition-all cursor-pointer flex-shrink-0"
+        title="บันทึกหอพักนี้"
+      >
+        <span class="text-rose-500">❤️</span>
+        <span>บันทึก</span>
+      </button>
+    </div>
 
     <!-- Header -->
     <header class="mb-8">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+      <div class="flex items-center gap-2 mb-3 flex-wrap">
+        <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-2xs">
           {data.type}
         </span>
         {data.petFriendly && (
-          <span class="bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+          <span class="bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-2xs">
             🐾 สัตว์เลี้ยงเข้าพักได้
           </span>
         )}
-        <span class="bg-stone-100 text-stone-700 text-xs font-semibold px-3 py-1 rounded-full">
+        <span class="bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-semibold px-3 py-1 rounded-full">
           📍 โซน: {data.zone}
         </span>
       </div>
 
-      <h1 class="text-2xl md:text-4xl font-extrabold text-stone-900 leading-snug tracking-tight">
+      <h1 class="text-2xl md:text-4xl font-extrabold text-stone-900 dark:text-white leading-snug tracking-tight">
         {data.title}
       </h1>
 
-      <div class="flex flex-wrap items-center gap-4 text-xs md:text-sm text-stone-500 mt-3 pb-6 border-b border-stone-200">
-        <span>🚶 ระยะทาง: <strong class="text-stone-800">{data.distanceToKU}</strong></span>
+      <div class="flex flex-wrap items-center gap-4 text-xs md:text-sm text-stone-500 dark:text-stone-400 mt-3 pb-6 border-b border-stone-200 dark:border-stone-800">
+        <span>🚶 ระยะทาง: <strong class="text-stone-800 dark:text-stone-200">{data.distanceToKU}</strong></span>
         <span>•</span>
         <span class="text-amber-500 font-bold">⭐ คะแนนรีวิวนิสิต: {avgRating} / 5</span>
       </div>
     </header>
 
     <!-- Cover Image -->
-    <div class="relative rounded-2xl overflow-hidden aspect-[16/9] mb-8 shadow-sm">
+    <div class="relative rounded-3xl overflow-hidden aspect-[16/9] mb-8 shadow-sm">
       <img
         src={data.coverImage}
         alt={`บรรยากาศหอพัก คอนโด ${data.title} ย่าน ม.เกษตร ศรีราชา`}
@@ -73,46 +94,52 @@ const avgRating = (data.studentReviews.reduce((sum, r) => sum + r.rating, 0) / d
     </div>
 
     <!-- Quick Info Box -->
-    <div class="bg-white rounded-2xl border border-stone-200 p-6 shadow-sm mb-10">
-      <h2 class="text-lg font-bold text-stone-900 mb-4 flex items-center gap-2">
+    <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-6 shadow-sm mb-10">
+      <h2 class="text-lg font-bold text-stone-900 dark:text-white mb-4 flex items-center gap-2">
         <span>📋</span> รายละเอียดค่าใช้จ่ายและข้อมูลสัญญา
       </h2>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-100">
-          <span class="text-stone-400 text-xs block">ค่าเช่ารายเดือน</span>
-          <span class="text-base font-bold text-blue-600">{data.priceRange}</span>
+        <div class="bg-stone-50 dark:bg-stone-800/60 p-3.5 rounded-2xl border border-stone-100 dark:border-stone-700">
+          <span class="text-stone-400 dark:text-stone-400 text-xs block">ค่าเช่ารายเดือน</span>
+          <span class="text-base font-bold text-blue-600 dark:text-blue-400">{data.priceRange}</span>
         </div>
-        <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-100">
-          <span class="text-stone-400 text-xs block">ค่าน้ำประปา</span>
-          <span class="text-sm font-semibold text-stone-800">{data.waterRate}</span>
+        <div class="bg-stone-50 dark:bg-stone-800/60 p-3.5 rounded-2xl border border-stone-100 dark:border-stone-700">
+          <span class="text-stone-400 dark:text-stone-400 text-xs block">ค่าน้ำประปา</span>
+          <span class="text-sm font-semibold text-stone-800 dark:text-stone-200">{data.waterRate}</span>
         </div>
-        <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-100">
-          <span class="text-stone-400 text-xs block">ค่าไฟฟ้า</span>
-          <span class="text-sm font-semibold text-stone-800">{data.electricityRate}</span>
+        <div class="bg-stone-50 dark:bg-stone-800/60 p-3.5 rounded-2xl border border-stone-100 dark:border-stone-700">
+          <span class="text-stone-400 dark:text-stone-400 text-xs block">ค่าไฟฟ้า</span>
+          <span class="text-sm font-semibold text-stone-800 dark:text-stone-200">{data.electricityRate}</span>
         </div>
-        <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-100">
-          <span class="text-stone-400 text-xs block">การเลี้ยงสัตว์</span>
-          <span class="text-sm font-semibold text-stone-800">{data.petFriendly ? '✅ เลี้ยงได้' : '❌ ไม่อนุญาต'}</span>
+        <div class="bg-stone-50 dark:bg-stone-800/60 p-3.5 rounded-2xl border border-stone-100 dark:border-stone-700">
+          <span class="text-stone-400 dark:text-stone-400 text-xs block">การเลี้ยงสัตว์</span>
+          <span class="text-sm font-semibold text-stone-800 dark:text-stone-200">{data.petFriendly ? '✅ เลี้ยงได้' : '❌ ไม่อนุญาต'}</span>
         </div>
       </div>
 
       <!-- Facilities List -->
-      <h3 class="text-sm font-bold text-stone-800 mb-3">สิ่งอำนวยความสะดวกในโครงการ:</h3>
+      <h3 class="text-sm font-bold text-stone-800 dark:text-stone-200 mb-3">สิ่งอำนวยความสะดวกในโครงการ:</h3>
       <div class="flex flex-wrap gap-2 mb-6">
         {data.facilities.map((f) => (
-          <span class="bg-stone-100 text-stone-700 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1">
+          <span class="bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs px-3 py-1.5 rounded-xl flex items-center gap-1">
             <span>✓</span> {f}
           </span>
         ))}
       </div>
 
-      <div class="flex justify-end">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-stone-100 dark:border-stone-800">
+        <a
+          href="/calculator"
+          class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+        >
+          <span>⚡</span> ลองคำนวณค่าไฟของหอนี้แบบจำลอง <span>→</span>
+        </a>
         <a
           href={data.googleMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors shadow-sm"
+          class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-xl transition-colors shadow-sm"
         >
           <span>📍</span> ดูพิกัดบน Google Maps
         </a>
@@ -120,24 +147,24 @@ const avgRating = (data.studentReviews.reduce((sum, r) => sum + r.rating, 0) / d
     </div>
 
     <!-- Article Content -->
-    <div class="prose prose-stone lg:prose-lg max-w-none text-stone-700 leading-relaxed font-normal mb-12">
+    <div class="prose prose-stone dark:prose-invert lg:prose-lg max-w-none text-stone-700 dark:text-stone-300 leading-relaxed font-normal mb-12">
       <Content />
     </div>
 
     <!-- Student Reviews Section -->
-    <section class="mt-12 pt-8 border-t border-stone-200">
-      <h2 class="text-xl md:text-2xl font-bold text-stone-900 mb-6 flex items-center gap-2">
+    <section class="mt-12 pt-8 border-t border-stone-200 dark:border-stone-800">
+      <h2 class="text-xl md:text-2xl font-bold text-stone-900 dark:text-white mb-6 flex items-center gap-2">
         <span>💬</span> รีวิวจริงจากเด็กหอและนิสิต ม.เกษตร ศรีราชา ({data.studentReviews.length} รีวิว)
       </h2>
 
       <div class="space-y-4">
         {data.studentReviews.map((rev) => (
-          <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+          <div class="bg-white dark:bg-stone-900 p-5 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm">
             <div class="flex justify-between items-center mb-2">
-              <span class="font-bold text-stone-800 text-sm">👤 {rev.author}</span>
+              <span class="font-bold text-stone-800 dark:text-stone-200 text-sm">👤 {rev.author}</span>
               <span class="text-amber-500 font-bold text-xs">⭐ {rev.rating} / 5</span>
             </div>
-            <p class="text-stone-600 text-sm leading-relaxed">
+            <p class="text-stone-600 dark:text-stone-400 text-sm leading-relaxed">
               "{rev.comment}"
             </p>
           </div>

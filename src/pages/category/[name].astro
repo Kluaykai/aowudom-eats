@@ -29,15 +29,26 @@ const { categoryName, reviews } = Astro.props;
   <div class="max-w-6xl mx-auto px-4 py-10 md:py-14">
     <!-- Header -->
     <div class="mb-10 text-center max-w-xl mx-auto">
-      <span class="text-xs uppercase tracking-wider font-semibold text-brand-600 bg-brand-50 px-3 py-1 rounded-full">
+      <span class="text-xs uppercase tracking-wider font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-stone-800 px-3 py-1 rounded-full shadow-2xs">
         หมวดหมู่ / แท็ก
       </span>
-      <h1 class="text-3xl md:text-4xl font-extrabold text-stone-900 mt-3">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-stone-900 dark:text-white mt-3">
         {categoryName}
       </h1>
-      <p class="text-stone-500 text-sm mt-2">
-        พบทั้งหมด {reviews.length} บทความในหมวดหมู่นี้
+      <p class="text-stone-500 dark:text-stone-400 text-sm mt-2">
+        พบทั้งหมด {reviews.length} ร้านในหมวดหมู่นี้
       </p>
+
+      <div class="mt-4 flex justify-center gap-2">
+        <button
+          type="button"
+          data-open-wheel
+          data-wheel-cat={categoryName}
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-amber-500 text-white font-bold text-xs shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+        >
+          <span>🎲</span> สุ่มร้านในหมวดนี้
+        </button>
+      </div>
     </div>
 
     <!-- Review Grid -->
@@ -48,7 +59,7 @@ const { categoryName, reviews } = Astro.props;
         ))}
       </div>
     ) : (
-      <div class="text-center py-16 bg-white rounded-2xl border border-stone-200">
+      <div class="text-center py-16 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800">
         <p class="text-stone-500">ยังไม่มีบทความในหมวดหมู่นี้</p>
         <a href="/" class="inline-block mt-4 text-brand-600 font-semibold text-sm">
           กลับสู่หน้าแรก →

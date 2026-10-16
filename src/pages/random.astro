@@ -1,0 +1,525 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { allLocations } from '../data/locationsData';
+
+const foodAndBars = allLocations.filter((item) => item.type === 'food' || item.type === 'nightlife');
+---
+
+<MainLayout
+  title="วงล้อสุ่มของกิน ม.เกษตร ศรีราชา มื้อนี้กินอะไรดี? | สุ่มร้านเด็ดอ่าวอุดม"
+  description="คิดไม่ออกว่ามื้อนี้จะกินอะไรดี? ใช้วงล้อสุ่มของกินเด็กหอ ม.เกษตร ศรีราชา และย่านอ่าวอุดม สุ่มร้านอาหารตามงบ ร้านเปิดดึก บุฟเฟต์ คาเฟ่"
+>
+  <div class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+    <!-- Header -->
+    <div class="text-center max-w-2xl mx-auto mb-8">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-100 dark:bg-stone-800 text-brand-600 dark:text-brand-400 text-xs font-bold mb-3 shadow-xs">
+        <span>🎲 หมุนเสี่ยงทายมื้อนี้</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-extrabold text-stone-900 dark:text-white tracking-tight">
+        มื้อนี้กินอะไรดี? <br class="hidden sm:inline" />
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-amber-500">
+          วงล้อสุ่มของกินเด็กหอ ม.เกษตร
+        </span>
+      </h1>
+      <p class="mt-3 text-stone-600 dark:text-stone-300 text-sm md:text-base">
+        แก้ปัญหาโลกแตกของเด็กหอและชาว ม.เกษตร ศรีราชา สุ่มตามงบ สุ่มร้านเปิดดึก หรือสุ่มร้านนั่งชิลกับแก๊งเพื่อนได้ในคลิกเดียว!
+      </p>
+    </div>
+
+    <!-- Main Randomizer Card -->
+    <div class="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden p-6 md:p-8">
+      <!-- Filter Bar -->
+      <div class="space-y-3 mb-6">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <span class="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
+            หมวดหมู่ที่ต้องการสุ่ม:
+          </span>
+          <span id="page-item-count" class="text-xs text-brand-600 dark:text-brand-400 font-bold"></span>
+        </div>
+
+        <div class="flex flex-wrap gap-2" id="page-filters">
+          <button
+            type="button"
+            data-pcat="all"
+            class="pcat-btn active px-3.5 py-2 rounded-xl text-xs font-bold bg-brand-500 text-white shadow-xs transition-all"
+          >
+            ทั้งหมด ({foodAndBars.length})
+          </button>
+          <button
+            type="button"
+            data-pcat="อาหารจานด่วน"
+            class="pcat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all"
+          >
+            🍜 จานด่วน/งบประหยัด
+          </button>
+          <button
+            type="button"
+            data-pcat="ร้านปิดดึก"
+            class="pcat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all"
+          >
+            🌙 เปิดดึก คลั่งหิวดึก
+          </button>
+          <button
+            type="button"
+            data-pcat="บุฟเฟต์-หมูกระทะ"
+            class="pcat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all"
+          >
+            🥩 บุฟเฟต์/หมูกระทะ
+          </button>
+          <button
+            type="button"
+            data-pcat="คาเฟ่"
+            class="pcat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all"
+          >
+            ☕ คาเฟ่/ของหวาน
+          </button>
+          <button
+            type="button"
+            data-pcat="ซีฟู้ด-ริมทะเล"
+            class="pcat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all"
+          >
+            🦀 ซีฟู้ดก้นอ่าว
+          </button>
+          <button
+            type="button"
+            data-pcat="nightlife"
+            class="pcat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all"
+          >
+            🍻 ร้านเหล้า/นั่งชิล
+          </button>
+        </div>
+      </div>
+
+      <!-- Wheel & Actions Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Wheel Column -->
+        <div class="lg:col-span-7 flex flex-col items-center justify-center relative">
+          <!-- Top pointer arrow -->
+          <div class="absolute -top-2 z-20 text-brand-600 filter drop-shadow-md">
+            <svg class="w-10 h-10" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22L3.5 6.5h17L12 22z" />
+            </svg>
+          </div>
+
+          <!-- Wheel container -->
+          <div class="relative w-[300px] h-[300px] sm:w-[350px] sm:h-[350px] rounded-full p-2.5 bg-gradient-to-tr from-stone-200 to-stone-100 dark:from-stone-800 dark:to-stone-700 shadow-2xl flex items-center justify-center">
+            <canvas id="page-wheel-canvas" width="340" height="340" class="w-full h-full rounded-full cursor-pointer"></canvas>
+            
+            <button
+              id="page-spin-center-btn"
+              class="absolute w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-stone-900 dark:bg-white text-white dark:text-stone-900 font-extrabold text-sm sm:text-base flex flex-col items-center justify-center shadow-2xl border-4 border-white dark:border-stone-900 hover:scale-105 active:scale-95 transition-all cursor-pointer z-10"
+            >
+              <span>หมุน!</span>
+              <span class="text-[10px] font-normal opacity-80">SPIN</span>
+            </button>
+          </div>
+
+          <canvas id="page-confetti-canvas" class="absolute inset-0 pointer-events-none w-full h-full z-30"></canvas>
+
+          <div class="flex items-center gap-3 mt-6 w-full max-w-sm">
+            <button
+              id="page-spin-btn"
+              type="button"
+              class="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-brand-600 to-orange-500 hover:from-brand-700 hover:to-orange-600 text-white font-extrabold text-base shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>🎯 หมุนวงล้อสุ่ม</span>
+            </button>
+            <button
+              id="page-instant-btn"
+              type="button"
+              class="py-3.5 px-4 rounded-2xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 font-bold text-sm transition-all flex items-center gap-1.5 cursor-pointer"
+              title="สุ่มทันที 1 วินาที"
+            >
+              ⚡ ด่วน
+            </button>
+          </div>
+        </div>
+
+        <!-- Result Box Column -->
+        <div class="lg:col-span-5">
+          <div
+            id="page-result-box"
+            class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-stone-800 dark:to-stone-800/60 rounded-3xl p-6 border-2 border-brand-200 dark:border-stone-700 shadow-md text-left transition-all"
+          >
+            <div id="result-placeholder" class="text-center py-10 text-stone-400 dark:text-stone-500">
+              <span class="text-4xl block mb-2">🍽️</span>
+              <p class="font-bold text-sm">กดปุ่ม "หมุนวงล้อสุ่ม" เพื่อเริ่มเลือกมื้อนี้!</p>
+              <p class="text-xs text-stone-400 mt-1">ระบบจะสุ่มร้านอาหารเด็ดย่านอ่าวอุดมให้คุณ</p>
+            </div>
+
+            <div id="result-content" class="hidden space-y-4">
+              <div class="relative aspect-[16/10] rounded-2xl overflow-hidden shadow-sm bg-stone-100 dark:bg-stone-700">
+                <img id="p-result-img" src="" alt="" class="w-full h-full object-cover" />
+                <div class="absolute top-3 left-3 bg-brand-500 text-white font-bold text-xs px-3 py-1 rounded-full shadow-sm">
+                  <span id="p-result-cat"></span>
+                </div>
+                <div class="absolute bottom-3 right-3 bg-stone-900/80 backdrop-blur-sm text-amber-300 font-bold text-xs px-2.5 py-1 rounded-full shadow-sm">
+                  ⭐ <span id="p-result-rating"></span>
+                </div>
+              </div>
+
+              <div>
+                <span id="p-result-zone" class="text-xs text-stone-500 dark:text-stone-400 font-medium"></span>
+                <h3 id="p-result-title" class="font-extrabold text-xl text-stone-900 dark:text-white leading-snug mt-1"></h3>
+                <p id="p-result-desc" class="text-xs text-stone-600 dark:text-stone-300 mt-2 line-clamp-3 leading-relaxed"></p>
+              </div>
+
+              <div class="bg-white/80 dark:bg-stone-700/60 rounded-xl p-3 border border-orange-100 dark:border-stone-600 text-xs flex justify-between items-center">
+                <div>
+                  <span class="text-stone-400 dark:text-stone-400 text-[11px] block">งบประมาณ</span>
+                  <span id="p-result-price" class="font-bold text-stone-800 dark:text-stone-200"></span>
+                </div>
+                <div class="text-right">
+                  <span class="text-stone-400 dark:text-stone-400 text-[11px] block">เวลาเปิด-ปิด</span>
+                  <span id="p-result-hours" class="font-semibold text-stone-700 dark:text-stone-300"></span>
+                </div>
+              </div>
+
+              <div class="space-y-2 pt-1">
+                <a
+                  id="p-result-maps"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-sm"
+                >
+                  <span>🧭 นำทาง Google Maps ทันที</span>
+                </a>
+                <div class="flex gap-2">
+                  <a
+                    id="p-result-detail"
+                    href="#"
+                    class="flex-1 py-2 px-3 rounded-xl bg-white dark:bg-stone-700 hover:bg-stone-100 dark:hover:bg-stone-600 text-stone-800 dark:text-white border border-stone-200 dark:border-stone-600 font-semibold text-xs text-center transition-colors"
+                  >
+                    📖 ดูรีวิว & เมนูแนะนำ
+                  </a>
+                  <button
+                    id="share-result-btn"
+                    type="button"
+                    class="py-2 px-3 rounded-xl bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 text-stone-700 dark:text-stone-200 font-semibold text-xs flex items-center gap-1 transition-colors cursor-pointer"
+                    title="คัดลอกข้อความชวนเพื่อนไปร้านนี้"
+                  >
+                    <span>📤 ชวนเพื่อน</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Spin History -->
+          <div class="mt-6">
+            <h4 class="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-2">
+              ประวัติการสุ่มล่าสุด:
+            </h4>
+            <div id="spin-history-list" class="space-y-1.5 max-h-40 overflow-y-auto text-xs text-stone-600 dark:text-stone-300">
+              <p class="text-stone-400 italic text-xs py-1">ยังไม่มีประวัติการสุ่ม</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<script is:inline define:vars={{ foodAndBars }}>
+  window.pageFoodData = foodAndBars;
+  let items = [...window.pageFoodData];
+  let isSpinning = false;
+  let currentAngle = 0;
+  const history = [];
+
+  const canvas = document.getElementById('page-wheel-canvas');
+  const ctx = canvas ? canvas.getContext('2d') : null;
+  const spinBtn = document.getElementById('page-spin-btn');
+  const spinCenterBtn = document.getElementById('page-spin-center-btn');
+  const instantBtn = document.getElementById('page-instant-btn');
+  const filterBtns = document.querySelectorAll('.pcat-btn');
+  const countBadge = document.getElementById('page-item-count');
+  const historyList = document.getElementById('spin-history-list');
+  const shareBtn = document.getElementById('share-result-btn');
+
+  const sliceColors = [
+    '#f97316', '#fb923c', '#ea580c', '#e11d48', '#f43f5e',
+    '#059669', '#10b981', '#0284c7', '#38bdf8', '#8b5cf6',
+    '#a855f7', '#d97706', '#f59e0b', '#ec4899', '#6366f1'
+  ];
+
+  let currentWinningItem = null;
+
+  // Web Audio Context for audio feedback
+  let audioCtx = null;
+  function getAudioContext() {
+    if (!audioCtx) {
+      const AudioClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioClass) audioCtx = new AudioClass();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function playTickSound() {
+    try {
+      const c = getAudioContext();
+      if (!c) return;
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(600, c.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(150, c.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.12, c.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(c.destination);
+      osc.start();
+      osc.stop(c.currentTime + 0.04);
+    } catch (e) {}
+  }
+
+  function playWinSound() {
+    try {
+      const c = getAudioContext();
+      if (!c) return;
+      [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, c.currentTime + idx * 0.09);
+        gain.gain.setValueAtTime(0.2, c.currentTime + idx * 0.09);
+        gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + idx * 0.09 + 0.3);
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(c.currentTime + idx * 0.09);
+        osc.stop(c.currentTime + idx * 0.09 + 0.35);
+      });
+    } catch (e) {}
+  }
+
+  function draw() {
+    if (!ctx || !canvas) return;
+    const num = items.length;
+    if (num === 0) return;
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const r = w / 2 - 4;
+    const sliceAngle = (2 * Math.PI) / num;
+
+    ctx.clearRect(0, 0, w, h);
+
+    items.forEach((item, index) => {
+      const angle = currentAngle + index * sliceAngle;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, angle, angle + sliceAngle);
+      ctx.closePath();
+
+      ctx.fillStyle = sliceColors[index % sliceColors.length];
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle + sliceAngle / 2);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = num > 14 ? 'bold 11px Prompt, sans-serif' : 'bold 12px Prompt, sans-serif';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+      ctx.shadowBlur = 3;
+
+      let text = item.title || '';
+      if (text.length > 14) text = text.substring(0, 13) + '…';
+      ctx.fillText(text, r - 16, 4);
+      ctx.restore();
+    });
+
+    if (countBadge) countBadge.textContent = `พร้อมสุ่ม ${num} ร้าน`;
+  }
+
+  function launchConfetti() {
+    const cCanvas = document.getElementById('page-confetti-canvas');
+    if (!cCanvas) return;
+    const cCtx = cCanvas.getContext('2d');
+    if (!cCtx) return;
+
+    cCanvas.width = cCanvas.offsetWidth;
+    cCanvas.height = cCanvas.offsetHeight;
+    const particles = [];
+    const colors = ['#f97316', '#e11d48', '#10b981', '#3b82f6', '#facc15', '#a855f7'];
+
+    for (let i = 0; i < 70; i++) {
+      particles.push({
+        x: cCanvas.width / 2,
+        y: cCanvas.height / 2,
+        vx: (Math.random() - 0.5) * 12,
+        vy: (Math.random() - 0.7) * 14,
+        size: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        vr: (Math.random() - 0.5) * 10,
+        life: 1.0
+      });
+    }
+
+    function render() {
+      cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+      let alive = false;
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35;
+        p.vx *= 0.98;
+        p.rotation += p.vr;
+        p.life -= 0.015;
+
+        if (p.life > 0) {
+          alive = true;
+          cCtx.save();
+          cCtx.translate(p.x, p.y);
+          cCtx.rotate((p.rotation * Math.PI) / 180);
+          cCtx.fillStyle = p.color;
+          cCtx.globalAlpha = Math.max(0, p.life);
+          cCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 1.5);
+          cCtx.restore();
+        }
+      });
+
+      if (alive) {
+        requestAnimationFrame(render);
+      } else {
+        cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+      }
+    }
+    render();
+  }
+
+  function showResult(item) {
+    currentWinningItem = item;
+    const placeholder = document.getElementById('result-placeholder');
+    const content = document.getElementById('result-content');
+
+    if (placeholder) placeholder.classList.add('hidden');
+    if (content) content.classList.remove('hidden');
+
+    document.getElementById('p-result-img').src = item.coverImage;
+    document.getElementById('p-result-cat').textContent = item.category;
+    document.getElementById('p-result-rating').textContent = (item.rating || 4.7).toFixed(1);
+    document.getElementById('p-result-zone').textContent = '📍 โซน: ' + (item.zone || 'อ่าวอุดม');
+    document.getElementById('p-result-title').textContent = item.title;
+    document.getElementById('p-result-desc').textContent = item.description;
+    document.getElementById('p-result-price').textContent = item.price || 'งบประหยัด';
+    document.getElementById('p-result-hours').textContent = item.openHours ? item.openHours.split('(')[0] : 'เปิดทุกวัน';
+    document.getElementById('p-result-maps').href = item.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}`;
+    document.getElementById('p-result-detail').href = item.url || '#';
+
+    // Add to history
+    history.unshift({ title: item.title, category: item.category, time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) });
+    if (history.length > 5) history.pop();
+
+    if (historyList) {
+      historyList.innerHTML = history.map((h) => `
+        <div class="flex items-center justify-between p-2 rounded-lg bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700">
+          <span class="font-bold text-stone-800 dark:text-stone-200 truncate mr-2">${h.title}</span>
+          <span class="text-[10px] text-stone-400 flex-shrink-0">${h.category} • ${h.time}</span>
+        </div>
+      `).join('');
+    }
+
+    playWinSound();
+    launchConfetti();
+  }
+
+  function spin() {
+    if (isSpinning || items.length === 0) return;
+    isSpinning = true;
+
+    const duration = 3500;
+    const start = performance.now();
+    const startAngle = currentAngle;
+
+    const winIdx = Math.floor(Math.random() * items.length);
+    const sliceAngle = (2 * Math.PI) / items.length;
+    const targetSlice = (3 * Math.PI) / 2 - (winIdx * sliceAngle + sliceAngle / 2);
+    const rotations = (5 + Math.floor(Math.random() * 4)) * (2 * Math.PI);
+    const totalToRotate = rotations + ((targetSlice - (startAngle % (2 * Math.PI)) + 4 * Math.PI) % (2 * Math.PI));
+
+    let lastTickAngle = startAngle;
+
+    function step(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      currentAngle = startAngle + totalToRotate * easeOut;
+
+      if (Math.abs(currentAngle - lastTickAngle) > sliceAngle * 0.9) {
+        playTickSound();
+        lastTickAngle = currentAngle;
+      }
+
+      draw();
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        isSpinning = false;
+        showResult(items[winIdx]);
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function instant() {
+    if (items.length === 0) return;
+    const winIdx = Math.floor(Math.random() * items.length);
+    showResult(items[winIdx]);
+  }
+
+  function filter(cat) {
+    filterBtns.forEach((b) => {
+      if (b.dataset.pcat === cat) {
+        b.className = 'pcat-btn active px-3.5 py-2 rounded-xl text-xs font-bold bg-brand-500 text-white shadow-xs transition-all';
+      } else {
+        b.className = 'pcat-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all';
+      }
+    });
+
+    if (cat === 'all') {
+      items = [...window.pageFoodData];
+    } else if (cat === 'nightlife') {
+      items = window.pageFoodData.filter((i) => i.type === 'nightlife');
+    } else if (cat === 'อาหารจานด่วน') {
+      items = window.pageFoodData.filter((i) => i.category === 'อาหารจานด่วน' || i.category === 'งบประหยัด');
+    } else {
+      items = window.pageFoodData.filter((i) => i.category.includes(cat));
+    }
+    draw();
+  }
+
+  if (spinBtn) spinBtn.addEventListener('click', spin);
+  if (spinCenterBtn) spinCenterBtn.addEventListener('click', spin);
+  if (instantBtn) instantBtn.addEventListener('click', instant);
+
+  filterBtns.forEach((b) => {
+    b.addEventListener('click', () => filter(b.dataset.pcat || 'all'));
+  });
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async () => {
+      if (!currentWinningItem) return;
+      const text = `มื้อนี้วงล้อเลือกให้ไปกิน: "${currentWinningItem.title}" (${currentWinningItem.category}) พิกัด ${currentWinningItem.zone} ไปด้วยกันมั้ย! 🧭 นำทาง: ${currentWinningItem.googleMapsUrl}`;
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        shareBtn.innerHTML = '<span>✓ คัดลอกแล้ว!</span>';
+        setTimeout(() => {
+          shareBtn.innerHTML = '<span>📤 ชวนเพื่อน</span>';
+        }, 2000);
+      } else {
+        alert(text);
+      }
+    });
+  }
+
+  draw();
+</script>

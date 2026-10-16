@@ -2,17 +2,17 @@
 // SuggestionForm.astro - ฟอร์มแนะนำร้านเด็ด/แจ้งอัปเดตข้อมูลย่านอ่าวอุดม
 ---
 
-<div class="bg-gradient-to-br from-amber-50 via-orange-50 to-white rounded-3xl border border-orange-200/80 p-6 md:p-10 shadow-sm relative overflow-hidden" id="suggestion-form-container">
+<div class="bg-gradient-to-br from-amber-50 via-orange-50 to-white dark:from-stone-900 dark:via-stone-900 dark:to-stone-850 rounded-3xl border border-orange-200/80 dark:border-stone-700/80 p-6 md:p-10 shadow-sm relative overflow-hidden" id="suggestion-form-container">
   <div class="max-w-2xl mx-auto">
     <!-- Header -->
     <div class="text-center mb-8">
-      <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-brand-200 text-brand-600 text-xs font-bold mb-3 shadow-2xs">
+      <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-stone-800 border border-brand-200 dark:border-stone-700 text-brand-600 dark:text-brand-400 text-xs font-bold mb-3 shadow-2xs">
         💡 ร่วมสร้าง Community เด็กหอ ม.เกษตร ศรีราชา
       </span>
-      <h2 class="text-2xl md:text-3xl font-extrabold text-stone-900 tracking-tight">
+      <h2 class="text-2xl md:text-3xl font-extrabold text-stone-900 dark:text-white tracking-tight">
         แนะนำร้านเด็ด / หอพัก / แจ้งข้อมูลอัปเดต 💬
       </h2>
-      <p class="text-stone-600 text-xs md:text-sm mt-2 leading-relaxed">
+      <p class="text-stone-600 dark:text-stone-300 text-xs md:text-sm mt-2 leading-relaxed">
         เจอร้านเปิดใหม่ เมนูลับที่อยากบอกต่อ หรือร้านไหนย้ายพิกัด แจ้งมาได้เลย! ทีมงานจะนำข้อมูลไปตรวจสอบและอัปเดตขึ้นเว็บให้ทันที
       </p>
     </div>
@@ -22,7 +22,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <!-- Name of submitter -->
         <div>
-          <label for="s-author" class="block text-xs font-bold text-stone-700 mb-1">
+          <label for="s-author" class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
             ชื่อของคุณ / นามแฝง <span class="text-stone-400 font-normal">(เช่น นิสิตวิศวะฯ ปี 2)</span>
           </label>
           <input
@@ -30,19 +30,19 @@
             id="s-author"
             required
             placeholder="เช่น เด็กหอประตู 3, นิสิต KU"
-            class="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2.5 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+            class="w-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm text-stone-800 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
           />
         </div>
 
         <!-- Category -->
         <div>
-          <label for="s-category" class="block text-xs font-bold text-stone-700 mb-1">
+          <label for="s-category" class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
             หมวดหมู่ที่แนะนำ <span class="text-red-500">*</span>
           </label>
           <select
             id="s-category"
             required
-            class="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2.5 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+            class="w-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm text-stone-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
           >
             <option value="ร้านอาหาร/คาเฟ่">🍜 ร้านอาหาร / คาเฟ่ / ของหวาน</option>
             <option value="หอพัก/คอนโด">🏢 หอพัก / คอนโดมิเนียม</option>
@@ -55,7 +55,7 @@
 
       <!-- Place Name -->
       <div>
-        <label for="s-place" class="block text-xs font-bold text-stone-700 mb-1">
+        <label for="s-place" class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
           ชื่อร้าน / ชื่อหอพัก / บริการ <span class="text-red-500">*</span>
         </label>
         <input
@@ -63,13 +63,13 @@
           id="s-place"
           required
           placeholder="เช่น ร้านข้าวมันไก่เจ๊ณี, หอพักศรีราชาเพลส"
-          class="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2.5 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+          class="w-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm text-stone-800 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
         />
       </div>
 
       <!-- Details -->
       <div>
-        <label for="s-details" class="block text-xs font-bold text-stone-700 mb-1">
+        <label for="s-details" class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">
           รายละเอียด / เมนูแนะนำ / พิกัดคร่าวๆ <span class="text-red-500">*</span>
         </label>
         <textarea
@@ -77,7 +77,7 @@
           required
           rows="3"
           placeholder="เช่น อยู่ตรงข้ามประตู 3 เยื้องๆ เซเว่น กะเพราหมูกรอบให้เยอะมาก ปิดเที่ยงคืน หรือระบุจุดสังเกต..."
-          class="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2.5 text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+          class="w-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm text-stone-800 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
         ></textarea>
       </div>
 
@@ -95,17 +95,17 @@
 
     <!-- Success Message Box -->
     <div id="suggest-success" class="hidden text-center py-8">
-      <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner">
+      <div class="w-14 h-14 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner">
         ✓
       </div>
-      <h3 class="text-lg font-bold text-stone-900">ขอบคุณสำหรับข้อมูลครับ! 🎉</h3>
-      <p class="text-xs md:text-sm text-stone-600 mt-1 max-w-md mx-auto">
+      <h3 class="text-lg font-bold text-stone-900 dark:text-white">ขอบคุณสำหรับข้อมูลครับ! 🎉</h3>
+      <p class="text-xs md:text-sm text-stone-600 dark:text-stone-300 mt-1 max-w-md mx-auto">
         ทีมงานได้รับข้อความแนะนำของคุณเรียบร้อยแล้ว จะรีบนำข้อมูลไปเช็คพิกัดและนำขึ้นเว็บไซต์โดยเร็วที่สุดครับ
       </p>
       <button
         type="button"
         id="s-reset-btn"
-        class="mt-4 text-xs font-bold text-brand-600 hover:underline cursor-pointer"
+        class="mt-4 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer"
       >
         + แนะนำร้านอื่นเพิ่มเติม
       </button>

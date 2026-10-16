@@ -14,21 +14,31 @@ const zones = ['ซอยอ่าวอุดม', 'ประตู 1', 'ปร
 >
   <div class="max-w-6xl mx-auto px-4 py-10 md:py-14">
     <!-- Header -->
-    <div class="text-center max-w-2xl mx-auto mb-10">
-      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold mb-3">
+    <div class="text-center max-w-2xl mx-auto mb-8">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-stone-800 text-blue-600 dark:text-blue-400 text-xs font-bold mb-3 shadow-2xs">
         🏢 หอพัก & คอนโดมิเนียม
       </span>
-      <h1 class="text-3xl md:text-5xl font-extrabold text-stone-900 tracking-tight">
+      <h1 class="text-3xl md:text-5xl font-extrabold text-stone-900 dark:text-white tracking-tight">
         รวมหอพัก-คอนโด <span class="text-blue-600">ม.เกษตร ศรีราชา</span>
       </h1>
-      <p class="mt-3 text-stone-600 text-sm md:text-base">
+      <p class="mt-3 text-stone-600 dark:text-stone-300 text-sm md:text-base">
         รวมหอพักรอบมหาวิทยาลัย ย่านอ่าวอุดม ประตู 1, 2, 3 และเขาน้ำซับ คัดกรองข้อมูลค่าไฟ เลี้ยงสัตว์ได้ พร้อมรีวิวจริงจากเด็กหอ
       </p>
+
+      <!-- Calculator Banner Call to Action -->
+      <div class="mt-6 flex justify-center">
+        <a
+          href="/calculator"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all"
+        >
+          <span>⚡</span> เครื่องคำนวณค่าไฟ & เปรียบเทียบหอพักตัวต่อตัว <span>→</span>
+        </a>
+      </div>
 
       <!-- Zone quick tags -->
       <div class="flex flex-wrap justify-center gap-2 mt-6">
         {zones.map((z) => (
-          <span class="text-xs bg-white border border-stone-200 text-stone-700 px-3 py-1.5 rounded-full shadow-sm">
+          <span class="text-xs bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 px-3 py-1.5 rounded-full shadow-2xs font-medium">
             📍 โซน{z}
           </span>
         ))}

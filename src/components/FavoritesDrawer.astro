@@ -1,0 +1,285 @@
+---
+// FavoritesDrawer.astro - แถบรายการโปรดของฉัน (Offline Bookmarks & Wishlist)
+---
+
+<!-- Favorites Drawer Backdrop & Container -->
+<div
+  id="favorites-drawer-backdrop"
+  class="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-300"
+></div>
+
+<aside
+  id="favorites-drawer"
+  class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-white dark:bg-stone-900 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col border-l border-stone-200 dark:border-stone-800"
+  aria-label="รายการโปรดของฉัน"
+>
+  <!-- Drawer Header -->
+  <div class="p-4 sm:p-5 border-b border-stone-100 dark:border-stone-800 flex items-center justify-between bg-stone-50/60 dark:bg-stone-800/40">
+    <div class="flex items-center gap-2">
+      <span class="w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center text-lg shadow-xs">
+        ❤️
+      </span>
+      <div>
+        <h3 class="font-extrabold text-base text-stone-900 dark:text-white leading-tight">
+          รายการโปรดของฉัน
+        </h3>
+        <p class="text-[11px] text-stone-500 dark:text-stone-400">
+          บันทึกร้านเด็ด & หอพักไว้ในเครื่องของคุณ
+        </p>
+      </div>
+    </div>
+    <button
+      id="close-fav-btn"
+      class="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer text-lg"
+      aria-label="ปิดแถบรายการโปรด"
+    >
+      ✕
+    </button>
+  </div>
+
+  <!-- Drawer Body -->
+  <div class="p-4 sm:p-5 flex-grow overflow-y-auto space-y-3" id="favorites-list-container">
+    <!-- Items will be rendered dynamically by JavaScript -->
+    <div id="fav-empty-state" class="text-center py-16 text-stone-400 dark:text-stone-500">
+      <span class="text-4xl block mb-2 opacity-60">🤍</span>
+      <p class="font-bold text-sm">ยังไม่มีรายการที่บันทึกไว้</p>
+      <p class="text-xs text-stone-400 mt-1 max-w-xs mx-auto">
+        แตะที่ไอคอนรูปหัวใจ ❤️ บนการ์ดร้านอาหาร หอพัก หรือร้านนั่งชิล เพื่อเก็บไว้ดูภายหลัง
+      </p>
+    </div>
+  </div>
+
+  <!-- Drawer Footer Actions -->
+  <div class="p-4 border-t border-stone-100 dark:border-stone-800 bg-stone-50/60 dark:bg-stone-850 space-y-2">
+    <button
+      id="share-favorites-btn"
+      type="button"
+      class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+    >
+      <span>📤</span> คัดลอกลิสต์ร้านโปรดส่งให้เพื่อนใน LINE
+    </button>
+    <div class="flex justify-between items-center px-1">
+      <span id="fav-counter-footer" class="text-[11px] text-stone-400 font-medium">0 รายการ</span>
+      <button
+        id="clear-all-favs-btn"
+        type="button"
+        class="text-[11px] font-semibold text-stone-400 hover:text-red-500 transition-colors cursor-pointer"
+      >
+        ล้างรายการทั้งหมด
+      </button>
+    </div>
+  </div>
+</aside>
+
+<script is:inline>
+  const STORAGE_KEY = 'auwaudom_favorites_v1';
+  const drawerBackdrop = document.getElementById('favorites-drawer-backdrop');
+  const drawer = document.getElementById('favorites-drawer');
+  const closeBtn = document.getElementById('close-fav-btn');
+  const listContainer = document.getElementById('favorites-list-container');
+  const emptyState = document.getElementById('fav-empty-state');
+  const shareBtn = document.getElementById('share-favorites-btn');
+  const clearBtn = document.getElementById('clear-all-favs-btn');
+  const counterFooter = document.getElementById('fav-counter-footer');
+
+  // Load favorites from local storage
+  function getFavorites() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveFavorites(items) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch (e) {}
+    updateBadgeCounts();
+    renderFavorites();
+  }
+
+  // Update badge counters on all buttons across the website
+  function updateBadgeCounts() {
+    const favs = getFavorites();
+    const count = favs.length;
+    document.querySelectorAll('[data-fav-count-badge]').forEach((badge) => {
+      badge.textContent = count > 0 ? count : '';
+      if (count > 0) {
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    });
+    if (counterFooter) {
+      counterFooter.textContent = `${count} รายการ`;
+    }
+
+    // Update active hearts on cards
+    document.querySelectorAll('[data-fav-toggle-btn]').forEach((btn) => {
+      const id = btn.getAttribute('data-item-id');
+      const isFav = favs.some((f) => f.id === id);
+      if (isFav) {
+        btn.classList.add('text-rose-500', 'fill-rose-500');
+        btn.classList.remove('text-stone-400');
+      } else {
+        btn.classList.remove('text-rose-500', 'fill-rose-500');
+        btn.classList.add('text-stone-400');
+      }
+    });
+  }
+
+  // Render items in drawer
+  function renderFavorites() {
+    const favs = getFavorites();
+    if (!listContainer) return;
+
+    if (favs.length === 0) {
+      listContainer.innerHTML = '';
+      if (emptyState) listContainer.appendChild(emptyState);
+      emptyState.classList.remove('hidden');
+      return;
+    }
+
+    if (emptyState) emptyState.classList.add('hidden');
+
+    listContainer.innerHTML = favs.map((item) => `
+      <div class="flex items-center gap-3 p-3 rounded-2xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 shadow-2xs group relative">
+        <img src="${item.image}" alt="${item.title}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
+        <div class="flex-grow min-w-0 pr-6">
+          <div class="flex items-center gap-1.5 mb-0.5">
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand-100 text-brand-700 dark:bg-stone-700 dark:text-stone-300">${item.category}</span>
+          </div>
+          <h4 class="font-bold text-xs sm:text-sm text-stone-900 dark:text-white truncate">
+            <a href="${item.url || '#'}" class="hover:text-brand-500 transition-colors">${item.title}</a>
+          </h4>
+          <p class="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">${item.price || item.zone || ''}</p>
+          <div class="flex items-center gap-2 mt-1.5">
+            <a href="${item.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}`}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-emerald-600 hover:underline flex items-center gap-0.5">
+              🧭 นำทาง Maps
+            </a>
+            <span class="text-stone-300">•</span>
+            <a href="${item.url || '#'}" class="text-[10px] font-semibold text-stone-600 dark:text-stone-300 hover:underline">
+              ดูข้อมูล
+            </a>
+          </div>
+        </div>
+        <button
+          type="button"
+          data-remove-fav="${item.id}"
+          class="absolute top-2 right-2 text-stone-400 hover:text-red-500 p-1 text-xs transition-colors cursor-pointer"
+          title="ลบออกจากรายการโปรด"
+        >
+          ✕
+        </button>
+      </div>
+    `).join('');
+
+    // Attach remove handlers
+    listContainer.querySelectorAll('[data-remove-fav]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idToRemove = btn.getAttribute('data-remove-fav');
+        const updated = getFavorites().filter((f) => f.id !== idToRemove);
+        saveFavorites(updated);
+      });
+    });
+  }
+
+  // Toggle favorite for an item
+  window.toggleFavorite = function (item) {
+    const favs = getFavorites();
+    const existingIndex = favs.findIndex((f) => f.id === item.id);
+    if (existingIndex > -1) {
+      favs.splice(existingIndex, 1);
+    } else {
+      favs.unshift(item);
+    }
+    saveFavorites(favs);
+  };
+
+  // Drawer Controls
+  window.openFavoritesDrawer = function () {
+    renderFavorites();
+    if (drawer && drawerBackdrop) {
+      drawerBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+      drawer.classList.remove('translate-x-full');
+    }
+  };
+
+  window.closeFavoritesDrawer = function () {
+    if (drawer && drawerBackdrop) {
+      drawerBackdrop.classList.add('opacity-0', 'pointer-events-none');
+      drawer.classList.add('translate-x-full');
+    }
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', window.closeFavoritesDrawer);
+  if (drawerBackdrop) drawerBackdrop.addEventListener('click', window.closeFavoritesDrawer);
+
+  document.addEventListener('click', (e) => {
+    // Open drawer trigger
+    if (e.target.closest('[data-open-favorites]')) {
+      window.openFavoritesDrawer();
+      return;
+    }
+
+    // Toggle heart button trigger
+    const heartBtn = e.target.closest('[data-fav-toggle-btn]');
+    if (heartBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = heartBtn.getAttribute('data-item-id');
+      const title = heartBtn.getAttribute('data-item-title') || '';
+      const category = heartBtn.getAttribute('data-item-category') || '';
+      const image = heartBtn.getAttribute('data-item-image') || '';
+      const price = heartBtn.getAttribute('data-item-price') || '';
+      const url = heartBtn.getAttribute('data-item-url') || '';
+      const mapsUrl = heartBtn.getAttribute('data-item-maps') || '';
+
+      // Pulse bounce animation
+      heartBtn.classList.add('scale-125');
+      setTimeout(() => heartBtn.classList.remove('scale-125'), 200);
+
+      window.toggleFavorite({ id, title, category, image, price, url, mapsUrl });
+    }
+  });
+
+  // Clear all
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (confirm('คุณต้องการลบรายการโปรดทั้งหมดใช่หรือไม่?')) {
+        saveFavorites([]);
+      }
+    });
+  }
+
+  // Share favorites to LINE / Clipboard
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async () => {
+      const favs = getFavorites();
+      if (favs.length === 0) {
+        alert('ยังไม่มีรายการโปรดให้แชร์ครับ กรุณากดหัวใจบันทึกร้านก่อนนะ!');
+        return;
+      }
+      let text = `📌 รวมร้านโปรดเด็กหอ ม.เกษตร ศรีราชา (${favs.length} รายการ) ที่อยากไป:\n\n`;
+      favs.forEach((f, i) => {
+        text += `${i + 1}. ${f.title} (${f.category})\n`;
+      });
+      text += `\nดูข้อมูลเต็มได้ที่เว็บรวมของกินและหอพักอ่าวอุดม`;
+
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        shareBtn.innerHTML = '<span>✓ คัดลอกลิสต์สำเร็จแล้ว!</span>';
+        setTimeout(() => {
+          shareBtn.innerHTML = '<span>📤</span> คัดลอกลิสต์ร้านโปรดส่งให้เพื่อนใน LINE';
+        }, 2500);
+      } else {
+        alert(text);
+      }
+    });
+  }
+
+  // Initial badge update
+  updateBadgeCounts();
+</script>

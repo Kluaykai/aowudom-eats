@@ -1,0 +1,374 @@
+---
+// AiGenerativeCanvas.astro - Interactive Living Generative Art Canvas
+interface Props {
+  initialPalette?: string[];
+  initialStyle?: string;
+  className?: string;
+  heightClass?: string;
+}
+
+const {
+  initialPalette = ['#ff007f', '#7928ca', '#00f0ff', '#10b981'],
+  initialStyle = 'flow_field',
+  className = '',
+  heightClass = 'h-[420px] md:h-[520px]',
+} = Astro.props;
+---
+
+<div class={`relative w-full overflow-hidden rounded-3xl bg-[#090a10] border border-stone-800 shadow-2xl ${className}`}>
+  <!-- Canvas Element -->
+  <canvas
+    id="ai-canvas"
+    class={`w-full ${heightClass} block cursor-crosshair`}
+    data-palette={JSON.stringify(initialPalette)}
+    data-style={initialStyle}
+  ></canvas>
+
+  <!-- Overlay Vignette & Glow -->
+  <div class="pointer-events-none absolute inset-0 bg-radial from-transparent via-transparent to-[#090a10]/80"></div>
+
+  <!-- Top Floating Status Pill -->
+  <div class="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-10">
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-900/80 backdrop-blur-md border border-stone-700/60 text-white text-xs font-mono shadow-lg">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+      <span class="text-emerald-400 font-bold">AI MIND STREAM:</span>
+      <span id="canvas-mode-label" class="text-stone-300">กระแสธารดิจิทัล (Flow Field)</span>
+    </div>
+
+    <div class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-900/80 backdrop-blur-md border border-stone-700/60 text-stone-300 text-xs font-mono">
+      <span>SYNAPSES:</span>
+      <span id="node-count" class="text-amber-400 font-bold">850 Nodes</span>
+      <span class="text-stone-600">|</span>
+      <span id="fps-counter" class="text-cyan-400">60 FPS</span>
+    </div>
+  </div>
+
+  <!-- Bottom Floating Interactive Controls Bar -->
+  <div class="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2 z-10">
+    <div class="flex items-center gap-2">
+      <!-- Re-Dream Button -->
+      <button
+        type="button"
+        id="btn-redream"
+        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-amber-500 hover:from-brand-500 hover:to-amber-400 text-white font-bold text-xs shadow-lg transition-transform active:scale-95 cursor-pointer backdrop-blur-md"
+        title="ให้ AI ปลุกจินตนาการและสุ่มคำนวณคลื่นศิลปะชุดใหม่"
+      >
+        <span>🎲</span>
+        <span>สุ่มฝันใหม่ (Re-Dream)</span>
+      </button>
+
+      <!-- Switch Mode Button -->
+      <button
+        type="button"
+        id="btn-switch-mode"
+        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-850/90 hover:bg-stone-800 text-stone-200 border border-stone-700 text-xs font-semibold shadow-md transition-colors cursor-pointer backdrop-blur-md"
+      >
+        <span>🌌</span>
+        <span>เปลี่ยนมิติ</span>
+      </button>
+
+      <!-- Pause / Play -->
+      <button
+        type="button"
+        id="btn-play-pause"
+        class="w-8 h-8 rounded-xl bg-stone-850/90 hover:bg-stone-800 text-stone-200 border border-stone-700 flex items-center justify-center text-xs shadow-md transition-colors cursor-pointer"
+        title="หยุด/เล่น ต่อเนื่อง"
+      >
+        <span id="play-pause-icon">⏸️</span>
+      </button>
+    </div>
+
+    <!-- Right: Save Image Button -->
+    <button
+      type="button"
+      id="btn-download-art"
+      class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-semibold shadow-md transition-colors cursor-pointer backdrop-blur-md"
+      title="บันทึกภาพศิลปะผลงาน AI ชิ้นนี้ลงเครื่อง"
+    >
+      <span>📸</span>
+      <span>บันทึกภาพ (PNG)</span>
+    </button>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const canvas = document.getElementById('ai-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const modeLabel = document.getElementById('canvas-mode-label');
+    const nodeCountEl = document.getElementById('node-count');
+    const fpsCounterEl = document.getElementById('fps-counter');
+    const btnReDream = document.getElementById('btn-redream');
+    const btnSwitchMode = document.getElementById('btn-switch-mode');
+    const btnPlayPause = document.getElementById('btn-play-pause');
+    const btnDownload = document.getElementById('btn-download-art');
+    const playPauseIcon = document.getElementById('play-pause-icon');
+
+    const MODES = [
+      { id: 'flow_field', label: 'กระแสธารดิจิทัล (Flow Field)' },
+      { id: 'neon_nebula', label: 'เนบิวลาแสงนีออน (Cyber Nebula)' },
+      { id: 'sacred_geometry', label: 'คลื่นฮาร์โมนิก (Harmonic Resonance)' }
+    ];
+
+    const PALETTES = [
+      ['#ff007f', '#7928ca', '#00f0ff', '#10b981'],
+      ['#00dfd8', '#007cf0', '#7928ca', '#ff4b1f'],
+      ['#ff4500', '#ff8c00', '#ffd700', '#ff1493'],
+      ['#10b981', '#06b6d4', '#3b82f6', '#8b5cf6'],
+      ['#ec4899', '#f43f5e', '#a855f7', '#6366f1'],
+      ['#38bdf8', '#818cf8', '#c084fc', '#f472b6']
+    ];
+
+    let currentModeIndex = 0;
+    let currentPalette = PALETTES[0];
+    try {
+      if (canvas.dataset.palette) {
+        currentPalette = JSON.parse(canvas.dataset.palette);
+      }
+    } catch (e) {}
+
+    let width = (canvas.width = canvas.offsetWidth);
+    let height = (canvas.height = canvas.offsetHeight);
+
+    let isPlaying = true;
+    let animationId = null;
+    let particles = [];
+    const PARTICLE_COUNT = Math.min(850, Math.floor((width * height) / 450));
+    let time = 0;
+    let noiseScale = 0.005;
+    let speedMult = 1.2;
+
+    // Mouse interactive ripples
+    let mouse = { x: -1000, y: -1000, isDown: false, radius: 120 };
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = 0;
+        this.vy = 0;
+        this.age = 0;
+        this.maxAge = Math.floor(Math.random() * 200) + 120;
+        this.color = currentPalette[Math.floor(Math.random() * currentPalette.length)];
+        this.size = Math.random() * 1.8 + 0.8;
+      }
+
+      update() {
+        const mode = MODES[currentModeIndex].id;
+
+        if (mode === 'flow_field') {
+          // Trigonometric Perlin-like pseudo flow field
+          const angle =
+            Math.sin(this.x * noiseScale + time * 0.3) * Math.PI +
+            Math.cos(this.y * noiseScale + time * 0.2) * Math.PI;
+
+          this.vx += Math.cos(angle) * 0.35 * speedMult;
+          this.vy += Math.sin(angle) * 0.35 * speedMult;
+          this.vx *= 0.94;
+          this.vy *= 0.94;
+        } else if (mode === 'neon_nebula') {
+          // Orbiting vortex center
+          const dx = width / 2 - this.x;
+          const dy = height / 2 - this.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) + 1;
+          const orbitAngle = Math.atan2(dy, dx) + Math.PI / 2;
+
+          this.vx += (Math.cos(orbitAngle) * 1.5 + (dx / dist) * 0.3) * speedMult * 0.4;
+          this.vy += (Math.sin(orbitAngle) * 1.5 + (dy / dist) * 0.3) * speedMult * 0.4;
+          this.vx *= 0.96;
+          this.vy *= 0.96;
+        } else {
+          // Harmonic wave resonance
+          const waveX = Math.sin(this.y * 0.02 + time) * 2;
+          const waveY = Math.cos(this.x * 0.02 + time) * 2;
+          this.vx += waveX * 0.2 * speedMult;
+          this.vy += waveY * 0.2 * speedMult;
+          this.vx *= 0.92;
+          this.vy *= 0.92;
+        }
+
+        // Mouse Ripple Interaction
+        const mdx = this.x - mouse.x;
+        const mdy = this.y - mouse.y;
+        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+        if (mdist < mouse.radius) {
+          const force = (1 - mdist / mouse.radius) * (mouse.isDown ? -8 : 3.5);
+          this.vx += (mdx / mdist) * force;
+          this.vy += (mdy / mdist) * force;
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+        this.age++;
+
+        // Wrap around bounds or reset
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height;
+        if (this.y > height) this.y = 0;
+
+        if (this.age > this.maxAge) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 6;
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push(new Particle());
+      }
+      if (nodeCountEl) nodeCountEl.textContent = `${PARTICLE_COUNT} Nodes`;
+    }
+
+    function resize() {
+      width = canvas.width = canvas.offsetWidth;
+      height = canvas.height = canvas.offsetHeight;
+      initParticles();
+      // Clear background
+      ctx.fillStyle = '#090a10';
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Mouse & Touch events
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+      mouse.isDown = false;
+    });
+
+    canvas.addEventListener('mousedown', () => {
+      mouse.isDown = true;
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      mouse.isDown = false;
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!e.touches[0]) return;
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.touches[0].clientX - rect.left;
+      mouse.y = e.touches[0].clientY - rect.top;
+    }, { passive: true });
+
+    canvas.addEventListener('touchend', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    });
+
+    // FPS Counter
+    let lastTime = performance.now();
+    let frameCount = 0;
+
+    function animate(currentTime) {
+      if (!isPlaying) return;
+
+      // Trailing fade effect
+      ctx.fillStyle = 'rgba(9, 10, 16, 0.12)';
+      ctx.fillRect(0, 0, width, height);
+
+      time += 0.015;
+
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+      }
+
+      // Calculate FPS
+      frameCount++;
+      if (currentTime - lastTime >= 1000) {
+        if (fpsCounterEl) {
+          fpsCounterEl.textContent = `${frameCount} FPS`;
+        }
+        frameCount = 0;
+        lastTime = currentTime;
+      }
+
+      animationId = requestAnimationFrame(animate);
+    }
+
+    // Start Loop
+    ctx.fillStyle = '#090a10';
+    ctx.fillRect(0, 0, width, height);
+    animationId = requestAnimationFrame(animate);
+
+    // Control Handlers
+    if (btnReDream) {
+      btnReDream.addEventListener('click', () => {
+        // Pick new random palette and noise parameters
+        currentPalette = PALETTES[Math.floor(Math.random() * PALETTES.length)];
+        noiseScale = Math.random() * 0.007 + 0.003;
+        speedMult = Math.random() * 0.8 + 0.8;
+
+        // Flash background lightly
+        ctx.fillStyle = 'rgba(9, 10, 16, 0.4)';
+        ctx.fillRect(0, 0, width, height);
+
+        // Respawn particles with new colors
+        for (let p of particles) {
+          p.color = currentPalette[Math.floor(Math.random() * currentPalette.length)];
+          p.reset();
+        }
+      });
+    }
+
+    if (btnSwitchMode) {
+      btnSwitchMode.addEventListener('click', () => {
+        currentModeIndex = (currentModeIndex + 1) % MODES.length;
+        if (modeLabel) {
+          modeLabel.textContent = MODES[currentModeIndex].label;
+        }
+        // Smooth transition
+        ctx.fillStyle = 'rgba(9, 10, 16, 0.6)';
+        ctx.fillRect(0, 0, width, height);
+      });
+    }
+
+    if (btnPlayPause) {
+      btnPlayPause.addEventListener('click', () => {
+        isPlaying = !isPlaying;
+        if (isPlaying) {
+          playPauseIcon.textContent = '⏸️';
+          animationId = requestAnimationFrame(animate);
+        } else {
+          playPauseIcon.textContent = '▶️';
+          if (animationId) cancelAnimationFrame(animationId);
+        }
+      });
+    }
+
+    if (btnDownload) {
+      btnDownload.addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = `aowudom-ai-art-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+  })();
+</script>

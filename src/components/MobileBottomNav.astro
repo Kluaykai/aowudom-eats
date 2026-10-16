@@ -1,0 +1,78 @@
+---
+// MobileBottomNav.astro - App-like Navigation Bar for Mobile Users
+---
+
+<nav
+  class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-t border-stone-200 dark:border-stone-800 px-2 py-1.5 shadow-lg flex items-center justify-around text-[10px] font-bold text-stone-600 dark:text-stone-400"
+  aria-label="เมนูนำทางหลักบนมือถือ"
+>
+  <!-- Home -->
+  <a
+    href="/"
+    class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+  >
+    <span class="text-lg">🏠</span>
+    <span>หน้าแรก</span>
+  </a>
+
+  <!-- Food Randomizer -->
+  <button
+    type="button"
+    data-open-wheel
+    class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-brand-600 dark:text-brand-400 transition-colors cursor-pointer"
+  >
+    <span class="text-lg animate-bounce">🎲</span>
+    <span>สุ่มกิน</span>
+  </button>
+
+  <!-- Interactive Map -->
+  <a
+    href="/map"
+    class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+  >
+    <span class="text-lg">🗺️</span>
+    <span>แผนที่</span>
+  </a>
+
+  <!-- Dorm Calculator -->
+  <a
+    href="/calculator"
+    class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+  >
+    <span class="text-lg">⚡</span>
+    <span>คำนวณหอ</span>
+  </a>
+
+  <!-- AI Mind & Generative Art -->
+  <a
+    href="/ai-mind"
+    class="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+  >
+    <span class="text-lg">🎨</span>
+    <span>ศิลปะ AI</span>
+  </a>
+
+  <!-- SOS Emergency -->
+  <button
+    type="button"
+    data-open-sos
+    class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-red-600 dark:text-red-400 transition-colors cursor-pointer"
+  >
+    <span class="text-lg animate-pulse">🚨</span>
+    <span>SOS</span>
+  </button>
+
+  <!-- Favorites -->
+  <button
+    type="button"
+    data-open-favorites
+    class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl hover:text-rose-500 transition-colors relative cursor-pointer"
+  >
+    <span class="text-lg">❤️</span>
+    <span>โปรด</span>
+    <span
+      data-fav-count-badge
+      class="hidden absolute top-0.5 right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-extrabold flex items-center justify-center shadow-xs"
+    ></span>
+  </button>
+</nav>

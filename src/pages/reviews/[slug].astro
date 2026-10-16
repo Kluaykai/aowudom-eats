@@ -71,26 +71,46 @@ const schema = {
   schema={schema}
 >
   <article class="max-w-4xl mx-auto px-4 py-8 md:py-12">
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs text-stone-500 mb-6 overflow-x-auto whitespace-nowrap">
-      <a href="/" class="hover:text-brand-600">หน้าแรก</a>
-      <span>/</span>
-      <a href={`/category/${data.category}`} class="hover:text-brand-600">{data.category}</a>
-      <span>/</span>
-      <span class="text-stone-700 truncate">{data.shopName}</span>
-    </nav>
+    <!-- Breadcrumb & Bookmark Actions -->
+    <div class="flex items-center justify-between mb-6 gap-2">
+      <nav class="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400 overflow-x-auto whitespace-nowrap">
+        <a href="/" class="hover:text-brand-600 dark:hover:text-brand-400">หน้าแรก</a>
+        <span>/</span>
+        <a href={`/category/${data.category}`} class="hover:text-brand-600 dark:hover:text-brand-400">{data.category}</a>
+        <span>/</span>
+        <span class="text-stone-700 dark:text-stone-200 truncate">{data.shopName}</span>
+      </nav>
+
+      <!-- Bookmark Button -->
+      <button
+        type="button"
+        data-fav-toggle-btn
+        data-item-id={review.slug}
+        data-item-title={data.shopName || data.title}
+        data-item-category={data.category}
+        data-item-image={data.coverImage}
+        data-item-price={data.priceRange}
+        data-item-url={`/reviews/${review.slug}`}
+        data-item-maps={data.googleMapsUrl}
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs font-bold text-stone-600 dark:text-stone-300 hover:text-rose-500 shadow-2xs hover:scale-105 active:scale-95 transition-all cursor-pointer flex-shrink-0"
+        title="บันทึกร้านนี้"
+      >
+        <span class="text-rose-500">❤️</span>
+        <span>บันทึก</span>
+      </button>
+    </div>
 
     <!-- Header / Title -->
     <header class="mb-8">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-600 text-xs font-semibold mb-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 dark:bg-stone-800 text-brand-600 dark:text-brand-400 text-xs font-bold mb-4 shadow-2xs">
         {data.category}
       </div>
-      <h1 class="text-2xl md:text-4xl font-extrabold text-stone-900 leading-snug tracking-tight">
+      <h1 class="text-2xl md:text-4xl font-extrabold text-stone-900 dark:text-white leading-snug tracking-tight">
         {data.title}
       </h1>
 
-      <div class="flex flex-wrap items-center gap-4 text-xs md:text-sm text-stone-500 mt-4 pb-6 border-b border-stone-200">
-        <span class="flex items-center gap-1 font-medium text-stone-700">
+      <div class="flex flex-wrap items-center gap-4 text-xs md:text-sm text-stone-500 dark:text-stone-400 mt-4 pb-6 border-b border-stone-200 dark:border-stone-800">
+        <span class="flex items-center gap-1 font-medium text-stone-700 dark:text-stone-300">
           ✍️ <span>{data.author}</span>
         </span>
         <span>•</span>
@@ -105,7 +125,7 @@ const schema = {
     </header>
 
     <!-- Hero / Cover Image -->
-    <div class="relative rounded-2xl overflow-hidden aspect-[16/9] mb-8 shadow-sm">
+    <div class="relative rounded-3xl overflow-hidden aspect-[16/9] mb-8 shadow-sm">
       <img
         src={data.coverImage}
         alt={`บรรยากาศและเมนูอาหารร้าน ${data.shopName} ย่านอ่าวอุดม ม.เกษตร ศรีราชา - ${data.title}`}
@@ -124,22 +144,22 @@ const schema = {
     />
 
     <!-- Article Content (Markdown) -->
-    <div class="prose prose-stone lg:prose-lg max-w-none text-stone-700 leading-relaxed font-normal
-      prose-headings:text-stone-900 prose-headings:font-bold
-      prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline
-      prose-blockquote:border-l-brand-500 prose-blockquote:bg-stone-50 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
-      prose-img:rounded-xl">
+    <div class="prose prose-stone dark:prose-invert lg:prose-lg max-w-none text-stone-700 dark:text-stone-300 leading-relaxed font-normal
+      prose-headings:text-stone-900 dark:prose-headings:text-white prose-headings:font-bold
+      prose-a:text-brand-600 dark:prose-a:text-brand-400 prose-a:no-underline hover:prose-a:underline
+      prose-blockquote:border-l-brand-500 prose-blockquote:bg-stone-50 dark:prose-blockquote:bg-stone-800 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
+      prose-img:rounded-2xl">
       <Content />
     </div>
 
     <!-- Tags -->
-    <div class="mt-12 pt-6 border-t border-stone-200">
+    <div class="mt-12 pt-6 border-t border-stone-200 dark:border-stone-800">
       <h4 class="text-xs uppercase tracking-wider font-semibold text-stone-400 mb-3">แท็กที่เกี่ยวข้อง:</h4>
       <div class="flex flex-wrap gap-2">
         {data.tags.map((tag) => (
           <a
             href={`/category/${tag}`}
-            class="text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-1.5 rounded-lg transition-colors"
+            class="text-xs font-semibold bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 px-3 py-1.5 rounded-xl transition-colors"
           >
             #{tag}
           </a>
@@ -149,8 +169,8 @@ const schema = {
 
     <!-- Related Articles -->
     {relatedReviews.length > 0 && (
-      <section class="mt-16 pt-10 border-t border-stone-200">
-        <h3 class="text-xl font-bold text-stone-900 mb-6">
+      <section class="mt-16 pt-10 border-t border-stone-200 dark:border-stone-800">
+        <h3 class="text-xl font-bold text-stone-900 dark:text-white mb-6">
           ร้านใกล้เคียงหรือร้านที่คุณอาจสนใจ 🍜
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
